@@ -10,6 +10,64 @@ export interface SyncResult {
 
 const SPREADSHEET_NAME = 'ระบบเอกสารการเงิน บุคคลธรรมดา';
 
+/**
+ * Helper to escape numeric strings before writing to Google Sheets
+ * to preserve leading zeros (e.g. tax IDs, phone numbers, bank account numbers, document numbers).
+ */
+function escapeStringValue(val: string | undefined | null): string {
+  if (!val) return '';
+  // If the value consists purely of digits, prepend a single quote so Google Sheets treats it as text
+  if (/^\d+$/.test(val)) {
+    return `'${val}`;
+  }
+  return val;
+}
+
+/**
+ * Robustly restores leading zeros that might have been stripped by Google Sheets
+ * or automatically fixes existing/manually typed numeric strings.
+ */
+function fixLeadingZeros(val: any, type: 'taxId' | 'phone' | 'bankAccountNumber'): string {
+  if (val === undefined || val === null) return '';
+  let str = String(val).trim();
+  
+  // Strip leading single quote if present
+  if (str.startsWith("'")) {
+    str = str.slice(1);
+  }
+
+  // If it's a pure digit string:
+  if (/^\d+$/.test(str)) {
+    if (type === 'taxId' && str.length === 12) {
+      return '0' + str; // Pad Thai 13-digit Tax ID
+    }
+    if (type === 'phone') {
+      if (str.length === 9) {
+        return '0' + str; // Pad Thai 10-digit mobile phone
+      }
+      if (str.length === 8) {
+        return '0' + str; // Pad Thai 9-digit landline phone
+      }
+    }
+    if (type === 'bankAccountNumber' && str.length === 9) {
+      return '0' + str; // Pad common Thai 10-digit Bank Account numbers
+    }
+  }
+  return str;
+}
+
+/**
+ * Cleans string cells read from Google Sheets by removing any leading single quotes.
+ */
+function cleanSheetString(val: any): string {
+  if (val === undefined || val === null) return '';
+  let str = String(val).trim();
+  if (str.startsWith("'")) {
+    return str.slice(1);
+  }
+  return str;
+}
+
 // Headers for each sheet tab
 const HEADERS = {
   Documents: [
@@ -239,10 +297,10 @@ export async function pushDataToSpreadsheet(
       return [
         doc.id,
         doc.documentType,
-        doc.documentNumber,
+        escapeStringValue(doc.documentNumber),
         doc.date,
         doc.dueDate || '',
-        doc.referenceNumber || '',
+        escapeStringValue(doc.referenceNumber || ''),
         doc.clientId,
         doc.clientDetails.name,
         doc.discount,
@@ -270,9 +328,9 @@ export async function pushDataToSpreadsheet(
     ...data.clients.map(c => [
       c.id,
       c.name,
-      c.taxId || '',
+      escapeStringValue(c.taxId || ''),
       c.address,
-      c.phone,
+      escapeStringValue(c.phone),
       c.email,
       c.notes || ''
     ])
@@ -293,14 +351,14 @@ export async function pushDataToSpreadsheet(
   const profileRows = [
     HEADERS.Profile,
     ['name', data.profile.name],
-    ['taxId', data.profile.taxId],
+    ['taxId', escapeStringValue(data.profile.taxId)],
     ['address', data.profile.address],
-    ['phone', data.profile.phone],
+    ['phone', escapeStringValue(data.profile.phone)],
     ['email', data.profile.email],
     ['website', data.profile.website || ''],
     ['bankName', data.profile.bankName],
     ['bankAccountName', data.profile.bankAccountName],
-    ['bankAccountNumber', data.profile.bankAccountNumber],
+    ['bankAccountNumber', escapeStringValue(data.profile.bankAccountNumber)],
     ['signatureName', data.profile.signatureName || ''],
     ['useVat', data.profile.useVat ? 'TRUE' : 'FALSE'],
     ['vatRate', data.profile.vatRate],
@@ -376,35 +434,46 @@ export async function pullDataFromSpreadsheet(
     const profileValues = valueRanges[3]?.values || [];
 
     // Parse Clients
-    const clients: Client[] = clientValues.map((row: any) => ({
-      id: row[0] || '',
-      name: row[1] || '',
-      taxId: row[2] || '',
-      address: row[3] || '',
-      phone: row[4] || '',
-      email: row[5] || '',
-      notes: row[6] || ''
-    })).filter((c: Client) => c.id);
+    const clients: Client[] = clientValues.map((row: any) => {
+      const taxIdRaw = cleanSheetString(row[2]);
+      const phoneRaw = cleanSheetString(row[4]);
+      return {
+        id: cleanSheetString(row[0]),
+        name: cleanSheetString(row[1]),
+        taxId: fixLeadingZeros(taxIdRaw, 'taxId'),
+        address: cleanSheetString(row[3]),
+        phone: fixLeadingZeros(phoneRaw, 'phone'),
+        email: cleanSheetString(row[5]),
+        notes: cleanSheetString(row[6])
+      };
+    }).filter((c: Client) => c.id);
 
     // Parse Products
     const products: ProductItem[] = productValues.map((row: any) => ({
-      id: row[0] || '',
-      name: row[1] || '',
+      id: cleanSheetString(row[0]),
+      name: cleanSheetString(row[1]),
       price: parseFloat(row[2]) || 0,
-      unit: row[3] || 'หน่วย'
+      unit: cleanSheetString(row[3]) || 'หน่วย'
     })).filter((p: ProductItem) => p.id);
 
     // Parse Profile
     const profileRaw: Record<string, any> = {};
     profileValues.forEach((row: any) => {
       if (row && row.length >= 2) {
-        const key = row[0];
-        const val = row[1];
+        const key = cleanSheetString(row[0]);
+        let val = cleanSheetString(row[1]);
         if (key === 'useVat' || key === 'useWithholdingTax') {
           profileRaw[key] = val === 'TRUE';
         } else if (key === 'vatRate' || key === 'withholdingTaxRate') {
           profileRaw[key] = parseFloat(val) || 0;
         } else {
+          if (key === 'taxId') {
+            val = fixLeadingZeros(val, 'taxId');
+          } else if (key === 'phone') {
+            val = fixLeadingZeros(val, 'phone');
+          } else if (key === 'bankAccountNumber') {
+            val = fixLeadingZeros(val, 'bankAccountNumber');
+          }
           profileRaw[key] = val;
         }
       }
@@ -439,11 +508,15 @@ export async function pullDataFromSpreadsheet(
       let clientDetails = null;
       try {
         clientDetails = JSON.parse(row[20]);
+        if (clientDetails) {
+          if (clientDetails.taxId) clientDetails.taxId = fixLeadingZeros(clientDetails.taxId, 'taxId');
+          if (clientDetails.phone) clientDetails.phone = fixLeadingZeros(clientDetails.phone, 'phone');
+        }
       } catch (e) {
         // Fallback reconstruction
         clientDetails = clients.find(c => c.id === row[6]) || {
-          id: row[6] || '',
-          name: row[7] || '',
+          id: cleanSheetString(row[6]),
+          name: cleanSheetString(row[7]),
           address: '',
           phone: '',
           email: ''
@@ -453,19 +526,24 @@ export async function pullDataFromSpreadsheet(
       let ownerDetails = null;
       try {
         ownerDetails = JSON.parse(row[21]);
+        if (ownerDetails) {
+          if (ownerDetails.taxId) ownerDetails.taxId = fixLeadingZeros(ownerDetails.taxId, 'taxId');
+          if (ownerDetails.phone) ownerDetails.phone = fixLeadingZeros(ownerDetails.phone, 'phone');
+          if (ownerDetails.bankAccountNumber) ownerDetails.bankAccountNumber = fixLeadingZeros(ownerDetails.bankAccountNumber, 'bankAccountNumber');
+        }
       } catch (e) {
         // Fallback to current profile
         ownerDetails = profile;
       }
 
       return {
-        id: row[0] || '',
-        documentType: (row[1] || 'QUOTATION') as any,
-        documentNumber: row[2] || '',
-        date: row[3] || '',
-        dueDate: row[4] || '',
-        referenceNumber: row[5] || '',
-        clientId: row[6] || '',
+        id: cleanSheetString(row[0]),
+        documentType: (cleanSheetString(row[1]) || 'QUOTATION') as any,
+        documentNumber: cleanSheetString(row[2]),
+        date: cleanSheetString(row[3]),
+        dueDate: cleanSheetString(row[4]),
+        referenceNumber: cleanSheetString(row[5]),
+        clientId: cleanSheetString(row[6]),
         clientDetails,
         ownerDetails,
         items,
@@ -474,9 +552,9 @@ export async function pullDataFromSpreadsheet(
         vatRate: parseFloat(row[10]) || 0,
         isWithholdingTaxEnabled: row[11] === 'TRUE',
         withholdingTaxRate: parseFloat(row[12]) || 0,
-        status: (row[13] || 'draft') as any,
-        notes: row[14] || '',
-        createdAt: row[22] || new Date().toISOString()
+        status: (cleanSheetString(row[13]) || 'draft') as any,
+        notes: cleanSheetString(row[14]),
+        createdAt: cleanSheetString(row[22]) || new Date().toISOString()
       };
     }).filter((d: FinanceDocument) => d.id);
 
