@@ -121,6 +121,22 @@ const HEADERS = {
  * Returns the spreadsheet file info if found, otherwise null.
  */
 export async function findSpreadsheet(accessToken: string): Promise<{ id: string; name: string; url: string } | null> {
+  // First, check if we have a locally cached spreadsheet info in localStorage
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('google_spreadsheet_info');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.id && parsed.url) {
+          console.log('Using locally cached spreadsheet info:', parsed);
+          return parsed;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
   const query = encodeURIComponent(`name = '${SPREADSHEET_NAME}' and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false`);
   const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name,webViewLink)`;
 
@@ -130,7 +146,8 @@ export async function findSpreadsheet(accessToken: string): Promise<{ id: string
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to query Drive: ${res.statusText}`);
+      console.warn(`Drive API returned non-OK status: ${res.status}. Falling back to null.`);
+      return null;
     }
 
     const data = await res.json();
@@ -138,13 +155,13 @@ export async function findSpreadsheet(accessToken: string): Promise<{ id: string
       return {
         id: data.files[0].id,
         name: data.files[0].name,
-        url: data.files[0].webViewLink
+        url: data.files[0].webViewLink || `https://docs.google.com/spreadsheets/d/${data.files[0].id}/edit`
       };
     }
     return null;
   } catch (error) {
-    console.error('Error finding spreadsheet:', error);
-    throw error;
+    console.warn('Error finding spreadsheet in Drive API, falling back to null:', error);
+    return null;
   }
 }
 

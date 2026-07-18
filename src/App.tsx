@@ -20,6 +20,7 @@ import {
   pullDataFromSpreadsheet 
 } from './services/googleSheets';
 import { User as FirebaseUser } from 'firebase/auth';
+import firebaseConfig from '../firebase-applet-config.json';
 
 // Components
 import Dashboard from './components/Dashboard';
@@ -97,7 +98,31 @@ export default function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
-  const [spreadsheetInfo, setSpreadsheetInfo] = useState<{ id: string; name: string; url: string } | null>(null);
+  const [spreadsheetInfo, setSpreadsheetInfo] = useState<{ id: string; name: string; url: string } | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('google_spreadsheet_info');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
+
+  // Automatically persist spreadsheetInfo when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (spreadsheetInfo) {
+        localStorage.setItem('google_spreadsheet_info', JSON.stringify(spreadsheetInfo));
+      } else {
+        localStorage.removeItem('google_spreadsheet_info');
+      }
+    }
+  }, [spreadsheetInfo]);
+
   const [syncStatus, setSyncStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [lastSynced, setLastSynced] = useState<string | null>(null);
 
@@ -179,14 +204,40 @@ export default function App() {
       }
     } catch (err: any) {
       console.error('Sign in failed:', err);
-      if (isInIframe) {
+      const errCode = err?.code || '';
+      const errMessage = err?.message || '';
+      
+      if (errCode === 'auth/unauthorized-domain') {
+        const currentDomain = window.location.hostname;
+        showCustomAlert(
+          'โดเมนนี้ยังไม่ได้รับอนุญาตใน Firebase',
+          `คุณกำลังใช้งานจากโดเมน: ${currentDomain}\n\nกรุณาเพิ่มโดเมนนี้ในระบบ Firebase:\n1. ไปที่หน้า Firebase Console (https://console.firebase.google.com/)\n2. เลือกโปรเจกต์ "${firebaseConfig.projectId}"\n3. ไปที่ Authentication > Settings (แท็บการตั้งค่า)\n4. เลือก "Authorized domains" (โดเมนที่ได้รับอนุญาต)\n5. คลิก "Add domain" แล้วกรอก "${currentDomain}" จากนั้นกดบันทึก\n6. รีเฟรชหน้านี้แล้วลองเชื่อมต่อใหม่อีกครั้งครับ!`,
+          'error'
+        );
+      } else if (errCode === 'auth/popup-blocked') {
+        showCustomAlert(
+          'ป๊อปอัปถูกบล็อก',
+          'เบราว์เซอร์ของคุณบล็อกหน้าต่างป๊อปอัปสำหรับการเข้าสู่ระบบ กรุณาเปิดใช้งานป๊อปอัปสำหรับเว็บไซต์นี้ในแถบที่อยู่ของเบราว์เซอร์ แล้วลองใหม่อีกครั้งครับ',
+          'error'
+        );
+      } else if (errCode === 'auth/popup-closed-by-user') {
+        showCustomAlert(
+          'ยกเลิกการเชื่อมต่อ',
+          'คุณได้ปิดหน้าต่างลงชื่อเข้าใช้งานของ Google ก่อนที่จะเสร็จสิ้น กรุณาลองใหม่อีกครั้งหากต้องการซิงค์ข้อมูล',
+          'info'
+        );
+      } else if (isInIframe) {
         showCustomAlert(
           'เชื่อมต่อล้มเหลว',
           'เบราว์เซอร์บล็อกการลงชื่อเข้าใช้ Google ภายในหน้าต่างจำลอง (iFrame)\n\nกรุณาคลิกปุ่ม "เปิดแอปในแท็บใหม่" ด้านบนหรือมุมขวา แล้วทำการเชื่อมต่อในแท็บใหม่แทนครับ ข้อมูลทุกอย่างจะยังคงอยู่ 100%!',
           'error'
         );
       } else {
-        showCustomAlert('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อ Google Sheets ได้ กรุณาลองใหม่อีกครั้ง หรือเข้าสู่ระบบ Google ใหม่อีกครั้ง', 'error');
+        showCustomAlert(
+          'เชื่อมต่อล้มเหลว',
+          `ไม่สามารถเชื่อมต่อ Google Sheets ได้\n\nสาเหตุ: ${errMessage || errCode || 'เกิดข้อผิดพลาดในการรับสิทธิ์'}`,
+          'error'
+        );
       }
     } finally {
       setIsLoggingIn(false);
