@@ -33,10 +33,12 @@ import OwnerProfileForm from './components/OwnerProfileForm';
 // Icons
 import { 
   TrendingUp, FileText, Users, Briefcase, User as UserIcon, 
-  FileSpreadsheet, Sparkles, Building2, AlertTriangle, CheckCircle, X, Info
+  FileSpreadsheet, Sparkles, Building2, AlertTriangle, CheckCircle, X, Info, ExternalLink
 } from 'lucide-react';
 
 export default function App() {
+  const isInIframe = typeof window !== 'undefined' && window.self !== window.top;
+
   // Load data from LocalStorage
   const [ownerProfile, setOwnerProfile] = useState<OwnerProfile>(loadOwnerProfile);
   const [clients, setClients] = useState<Client[]>(loadClients);
@@ -175,9 +177,17 @@ export default function App() {
           showCustomAlert('เชื่อมต่อสำเร็จ', 'ระบบได้ทำการสร้างไฟล์ Google Sheet สำรองข้อมูลเรียบร้อยใน Google Drive:\n"ระบบเอกสารการเงิน บุคคลธรรมดา"', 'success');
         }
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Sign in failed:', err);
-      showCustomAlert('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อ Google Sheets ได้ กรุณาลองใหม่อีกครั้ง', 'error');
+      if (isInIframe) {
+        showCustomAlert(
+          'เชื่อมต่อล้มเหลว',
+          'เบราว์เซอร์บล็อกการลงชื่อเข้าใช้ Google ภายในหน้าต่างจำลอง (iFrame)\n\nกรุณาคลิกปุ่ม "เปิดแอปในแท็บใหม่" ด้านบนหรือมุมขวา แล้วทำการเชื่อมต่อในแท็บใหม่แทนครับ ข้อมูลทุกอย่างจะยังคงอยู่ 100%!',
+          'error'
+        );
+      } else {
+        showCustomAlert('เชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อ Google Sheets ได้ กรุณาลองใหม่อีกครั้ง หรือเข้าสู่ระบบ Google ใหม่อีกครั้ง', 'error');
+      }
     } finally {
       setIsLoggingIn(false);
     }
@@ -501,9 +511,17 @@ export default function App() {
                     )}
                   </div>
                 ) : (
-                  <div className="text-slate-500">
-                    <span className="font-medium text-slate-700">ฐานข้อมูลคลาวด์ Google Sheets:</span>{' '}
-                    เชื่อมต่อสเปรดชีตเพื่อจัดเก็บและสำรองข้อมูลลูกค้า บิล และโปรเจกต์ของคุณอย่างถาวร
+                  <div className="text-slate-500 space-y-1">
+                    <div>
+                      <span className="font-medium text-slate-700">ฐานข้อมูลคลาวด์ Google Sheets:</span>{' '}
+                      เชื่อมต่อสเปรดชีตเพื่อจัดเก็บและสำรองข้อมูลลูกค้า บิล และโปรเจกต์ของคุณอย่างถาวร
+                    </div>
+                    {isInIframe && (
+                      <div className="text-amber-600 font-bold flex items-center gap-1 text-[11px] animate-pulse">
+                        <AlertTriangle className="w-3.5 h-3.5" />
+                        ความปลอดภัยของเบราว์เซอร์บล็อกการล็อกอินใน iFrame แนะนำให้คลิก "เปิดแอปในแท็บใหม่" ก่อนกดยืนยันตัวตน
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -536,16 +554,29 @@ export default function App() {
                   </button>
                 </>
               ) : (
-                <button
-                  onClick={handleGoogleSignIn}
-                  disabled={isLoggingIn}
-                  className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-75 transition-all"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.478 0-6.3-2.823-6.3-6.3s2.822-6.3 6.3-6.3c1.706 0 3.2.685 4.28 1.764l3.12-3.12C19.26 2.505 15.93 1.114 12.24 1.114 6.225 1.114 1.34 6 1.34 12.028s4.885 10.914 10.9 10.914c6.305 0 10.914-4.43 10.914-11.064 0-.756-.08-1.306-.183-1.594H12.24z"/>
-                  </svg>
-                  {isLoggingIn ? 'กำลังเปิดหน้าเชื่อมต่อ...' : 'เชื่อมต่อ Google Sheets เพื่อเซฟข้อมูล'}
-                </button>
+                <div className="flex items-center gap-2">
+                  {isInIframe && (
+                    <a
+                      href={window.location.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg border border-emerald-600 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold inline-flex items-center gap-1.5 shadow-xs cursor-pointer transition-all"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      เปิดแอปในแท็บใหม่ (แนะนำ)
+                    </a>
+                  )}
+                  <button
+                    onClick={handleGoogleSignIn}
+                    disabled={isLoggingIn}
+                    className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-sm cursor-pointer disabled:opacity-75 transition-all"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M12.24 10.285V14.4h6.887c-.648 2.41-2.519 4.114-5.136 4.114-3.478 0-6.3-2.823-6.3-6.3s2.822-6.3 6.3-6.3c1.706 0 3.2.685 4.28 1.764l3.12-3.12C19.26 2.505 15.93 1.114 12.24 1.114 6.225 1.114 1.34 6 1.34 12.028s4.885 10.914 10.9 10.914c6.305 0 10.914-4.43 10.914-11.064 0-.756-.08-1.306-.183-1.594H12.24z"/>
+                    </svg>
+                    {isLoggingIn ? 'กำลังเปิดหน้าเชื่อมต่อ...' : 'เชื่อมต่อ Google Sheets'}
+                  </button>
+                </div>
               )}
             </div>
           </div>

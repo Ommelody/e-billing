@@ -6,5 +6,6 @@
   "storageBucket": "semiotic-aloe-rjmtp.firebasestorage.app",
   "messagingSenderId": "962864545740",
   "measurementId": "",
-  "oAuthClientId": "962864545740-e49v83s4if1toggitu8bmh3bpid18o0j.apps.googleusercontent.com"
+  "oAuthClientId": "962864545740-e49v83s4if1toggitu8bmh3bpid18o0j.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
 }
