@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Anuphan',system-ui,sans-serif;background:#f8fafc;-webkit-font-smoothing:antialiased}
+  a{color:#0f766e;text-decoration:none}
+  a:hover{color:#115e59}
+  input,textarea,select,button{font-family:inherit}
+  input:focus,textarea:focus,select:focus{border-color:#64748b !important}
+  ::-webkit-scrollbar{height:8px;width:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .om-fade{animation:fadeIn .2s ease-out both}
+  .om-slide{animation:slideUp .3s cubic-bezier(.16,1,.3,1) both}
+  @media print{
+    body{background:#fff !important}
+    .om-noprint{display:none !important}
+    #om-paper{box-shadow:none !important;border:none !important;margin:0 !important;width:210mm !important;max-width:210mm !important}
+  }
+  @page{size:A4;margin:12mm}
+</style>
+</helmet>
+<div>{{ view }}</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;brandColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#0f172a&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#0f172a&quot;,&quot;#1e3a5f&quot;,&quot;#3730a3&quot;,&quot;#065f46&quot;,&quot;#7c2d12&quot;],&quot;section&quot;:&quot;ธีม&quot;},&quot;positiveColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#059669&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#059669&quot;,&quot;#0d9488&quot;,&quot;#2563eb&quot;,&quot;#9333ea&quot;],&quot;section&quot;:&quot;ธีม&quot;}}">
+class Component extends DCLogic {
+  constructor(props){ super(props); this.state = this.initState(); }
+
+  // ---------- initial data ----------
+  defaultOwner(){ return {
+    name:'นพคุณ เลิศวิจิตรเดชา', taxId:'1100501234567',
+    address:'456/78 ถนนสุขุมวิท แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110',
+    phone:'0812345678', email:'noppakun.l@email.com', website:'www.noppakundesign.com',
+    bankName:'ธนาคารกสิกรไทย', bankAccountName:'นพคุณ เลิศวิจิตรเดชา', bankAccountNumber:'012-3-45678-9',
+    signatureName:'นพคุณ เลิศวิจิตรเดชา', useVat:false, vatRate:7, useWithholdingTax:true, withholdingTaxRate:3 }; }
+  initClients(){ return [
+    {id:'c-1',name:'บริษัท ทวีผล การค้า จำกัด (สำนักงานใหญ่)',taxId:'0105560012345',address:'123 ซอยสีลม 5 ถนนสีลม แขวงสุริยวงศ์ เขตบางรัก กรุงเทพมหานคร 10500',phone:'021112222',email:'contact@taweephol.co.th',notes:'ลูกค้าประจำ ชำระเงินตรงเวลา'},
+    {id:'c-2',name:'สถาบันสอนภาษาอังกฤษ เกรทฟิวเจอร์',taxId:'0994001234567',address:'888 อาคารเพรสทีจ ชั้น 12 ถนนพญาไท แขวงถนนพญาไท เขตราชเทวี กรุงเทพมหานคร 10400',phone:'0898765432',email:'info@greatfuture.edu',notes:'ออกเอกสารในนามสถาบัน'} ]; }
+  initProducts(){ return [
+    {id:'p-1',name:'บริการออกแบบกราฟิกและแบรนดิ้ง (Graphic & Branding Design)',price:15000,unit:'โปรเจกต์'},
+    {id:'p-2',name:'บริการพัฒนาเว็บบอร์ดและหน้าเว็บองค์กร (Web Development)',price:35000,unit:'โปรเจกต์'},
+    {id:'p-3',name:'ค่าบริการดูแลระบบรายเดือน (Website Maintenance)',price:3500,unit:'เดือน'},
+    {id:'p-4',name:'บริการเขียนบทความและทำคอนเทนต์ (Content Creation)',price:1200,unit:'บทความ'} ]; }
+  initDocuments(){ const o=this.defaultOwner(), c=this.initClients(); return [
+    {id:'doc-1',documentType:'QUOTATION',documentNumber:'QT-2607-0001',date:'2026-07-01',dueDate:'2026-07-15',clientId:'c-1',clientDetails:c[0],ownerDetails:o,
+      items:[{id:'li-1',description:'บริการออกแบบกราฟิกและแบรนดิ้ง (Graphic & Branding Design)',quantity:1,pricePerUnit:15000,unit:'โปรเจกต์',total:15000},{id:'li-2',description:'ค่าบริการดูแลระบบรายเดือน (Website Maintenance)',quantity:3,pricePerUnit:3500,unit:'เดือน',total:10500}],
+      discount:1000,isVatEnabled:false,vatRate:7,isWithholdingTaxEnabled:true,withholdingTaxRate:3,status:'paid',notes:'ขอบคุณที่ใช้บริการครับ ชำระเงินมัดจำ 50% ก่อนเริ่มงาน',paymentBankName:'ธนาคารกสิกรไทย',paymentBankAccountName:'นพคุณ เลิศวิจิตรเดชา',paymentBankAccountNumber:'012-3-45678-9',createdAt:'2026-07-01T08:00:00.000Z'},
+    {id:'doc-2',documentType:'INVOICE',documentNumber:'IV-2607-0001',date:'2026-07-10',dueDate:'2026-07-31',referenceNumber:'QT-2607-0001',clientId:'c-2',clientDetails:c[1],ownerDetails:o,
+      items:[{id:'li-3',description:'บริการพัฒนาเว็บบอร์ดและหน้าเว็บองค์กร (Web Development)',quantity:1,pricePerUnit:35000,unit:'โปรเจกต์',total:35000}],
+      discount:0,isVatEnabled:false,vatRate:7,isWithholdingTaxEnabled:true,withholdingTaxRate:3,status:'pending',notes:'กำหนดชำระภายในวันที่ 31 กรกฎาคม 2569',paymentBankName:'ธนาคารกสิกรไทย',paymentBankAccountName:'นพคุณ เลิศวิจิตรเดชา',paymentBankAccountNumber:'012-3-45678-9',createdAt:'2026-07-10T10:30:00.000Z'} ]; }
+
+  ls(k,fb){ try{ const v=localStorage.getItem(k); if(v) return JSON.parse(v);}catch(e){} return fb; }
+  save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+  initState(){
+    const owner=this.ls('om_owner',this.defaultOwner());
+    return { owner,
+      clients:this.ls('om_clients',this.initClients()),
+      products:this.ls('om_products',this.initProducts()),
+      documents:this.ls('om_documents',this.initDocuments()),
+      tab:'dashboard', view:'main', form:null, viewDoc:null,
+      docSearch:'', docStatus:'ALL', docType:'ALL', convMenu:null,
+      clientSearch:'', clientModal:null, productSearch:'', productModal:null,
+      profileForm:{...owner}, profileSaved:false,
+      sheetUrl:this.ls('om_sheet_url',''), syncing:false, syncStatus:'idle', lastSynced:null, connectModal:false, connectDraft:'',
+      dialog:{open:false} };
+  }
+
+  // ---------- formatters ----------
+  fc(v){ if(v==null||isNaN(v)) return '0.00'; return new Intl.NumberFormat('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v); }
+  ftd(s,short){ if(!s) return ''; const d=new Date(s); if(isNaN(d.getTime())) return s;
+    const F=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const S=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return d.getDate()+' '+(short?S:F)[d.getMonth()]+' '+(d.getFullYear()+543); }
+  fid(s){ if(!s) return ''; const c=(''+s).replace(/\D/g,''); if(c.length!==13) return s; return c[0]+'-'+c.slice(1,5)+'-'+c.slice(5,10)+'-'+c.slice(10,12)+'-'+c[12]; }
+  fph(s){ if(!s) return ''; const c=(''+s).replace(/\D/g,''); if(c.length===10) return c.slice(0,3)+'-'+c.slice(3,6)+'-'+c.slice(6); if(c.length===9) return c.slice(0,2)+'-'+c.slice(2,5)+'-'+c.slice(5); return s; }
+  genNum(type,last){ const d=new Date(); const y=(''+d.getFullYear()).slice(-2); const m=(''+(d.getMonth()+1)).padStart(2,'0'); const p={QUOTATION:'QT',INVOICE:'IV',BILLING:'BL',RECEIPT:'RE'}[type]||'QT'; return p+'-'+y+m+'-'+((last+1)+'').padStart(4,'0'); }
+  calcSummary(doc){ const sub=doc.items.reduce((s,i)=>s+(i.quantity*i.pricePerUnit),0); const ds=Math.max(0,sub-(doc.discount||0));
+    const vat=doc.isVatEnabled?ds*(doc.vatRate/100):0; const total=ds+vat; const wht=doc.isWithholdingTaxEnabled?ds*(doc.withholdingTaxRate/100):0;
+    return {subtotal:sub,discountedSubtotal:ds,vatAmount:vat,totalAmount:total,withholdingTaxAmount:wht,amountToPay:total-wht}; }
+  thb(num){ if(num==null||isNaN(num)) return 'ศูนย์บาทถ้วน'; const a=Math.abs(num).toFixed(2); const [bs,ss]=a.split('.'); const bv=parseInt(bs,10),sv=parseInt(ss,10);
+    if(bv===0&&sv===0) return 'ศูนย์บาทถ้วน';
+    const N=['ศูนย์','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า']; const P=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
+    const sec=(str)=>{let r='';const L=str.length;for(let i=0;i<L;i++){const dg=+str[i];const pos=L-i-1;if(dg!==0){if(pos===0&&dg===1&&L>1)r+='เอ็ด';else if(pos===1&&dg===2)r+='ยี่สิบ';else if(pos===1&&dg===1)r+='สิบ';else r+=N[dg]+P[pos];}}return r;};
+    const big=(str)=>{let r='';const L=str.length;if(L>6){r+=big(str.substring(0,L-6))+'ล้าน'+sec(str.substring(L-6));}else r+=sec(str);return r;};
+    let t=num<0?'ลบ':''; if(bv>0)t+=big(bs)+'บาท'; if(sv>0)t+=sec(ss)+'สตางค์'; else t+='ถ้วน'; return t; }
+
+  typeMeta(t){ return {QUOTATION:['ใบเสนอราคา','#2563eb','#eff6ff','#bfdbfe'],INVOICE:['ใบแจ้งหนี้','#9333ea','#faf5ff','#e9d5ff'],BILLING:['ใบวางบิล','#d97706','#fffbeb','#fde68a'],RECEIPT:['ใบเสร็จ','#059669','#ecfdf5','#a7f3d0']}[t]; }
+  statusMeta(s){ return {paid:['ชำระเงินแล้ว','#047857','#ecfdf5','#a7f3d0','check'],pending:['รอชำระเงิน','#b45309','#fffbeb','#fde68a','clock'],cancelled:['ยกเลิก','#b91c1c','#fef2f2','#fecaca','alert'],draft:['แบบร่าง','#475569','#f8fafc','#e2e8f0','file']}[s]; }
+
+  // ---------- icons ----------
+  ic(name,size,color){ size=size||16; color=color||'currentColor'; const h=React.createElement;
+    const D={
+      trend:['M22 7 13.5 15.5 8.5 10.5 2 17','M16 7h6v6'],
+      file:['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z','M14 2v6h6','M16 13H8','M16 17H8','M10 9H8'],
+      users:['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2',{c:[9,7,4]},'M22 21v-2a4 4 0 0 0-3-3.87','M16 3.13a4 4 0 0 1 0 7.75'],
+      brief:[{r:[2,7,20,14,2]},'M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16'],
+      user:['M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2',{c:[12,7,4]}],
+      building:['M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z','M9 22v-4h6v4','M9 6h.01','M9 10h.01','M9 14h.01','M15 6h.01','M15 10h.01','M15 14h.01'],
+      check:['M22 11.08V12a10 10 0 1 1-5.93-9.14','m9 11 3 3L22 4'],
+      clock:[{c:[12,12,10]},'M12 6v6l4 2'],
+      plus:['M5 12h14','M12 5v14'],
+      search:[{c:[11,11,8]},'m21 21-4.3-4.3'],
+      eye:['M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z',{c:[12,12,3]}],
+      edit:['M12 20h9','M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'],
+      trash:['M3 6h18','M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2','M10 11v6','M14 11v6'],
+      copy:[{r:[9,9,13,13,2]},'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'],
+      swap:['m16 3 4 4-4 4','M20 7H4','m8 21-4-4 4-4','M4 17h16'],
+      x:['M18 6 6 18','m6 6 12 12'],
+      cal:[{r:[3,4,18,18,2]},'M16 2v4','M8 2v4','M3 10h18'],
+      dollar:['M12 1v22','M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
+      save:['M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z','M17 21v-8H7v8','M7 3v5h8'],
+      chev:['m9 18 6-6-6-6'],
+      print:['M6 9V2h12v7','M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2',{r:[6,14,12,8,0]}],
+      back:['m12 19-7-7 7-7','M19 12H5'],
+      alert:['m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z','M12 9v4','M12 17h.01'],
+      info:[{c:[12,12,10]},'M12 16v-4','M12 8h.01'],
+      tag:['M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z',{c:[7.5,7.5,0.5]}],
+      bank:['M3 22h18','M6 18v-7','M10 18v-7','M14 18v-7','M18 18v-7','M12 2 21 8H3z'],
+      mail:[{r:[2,4,20,16,2]},'m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7'],
+      phone:['M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z'],
+      pin:['M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z',{c:[12,10,3]}],
+      globe:[{c:[12,12,10]},'M2 12h20','M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z'],
+      shield:['M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z','m9 12 2 2 4-4'],
+      sheet:['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z','M14 2v6h6','M8 13h2','M8 17h2','M14 13h2','M14 17h2']
+    };
+    const spec=D[name]||[];
+    const nodes=spec.map((n,i)=>{ if(typeof n==='string') return h('path',{key:i,d:n});
+      if(n.c) return h('circle',{key:i,cx:n.c[0],cy:n.c[1],r:n.c[2]});
+      if(n.r) return h('rect',{key:i,x:n.r[0],y:n.r[1],width:n.r[2],height:n.r[3],rx:n.r[4]}); return null; });
+    return h('svg',{width:size,height:size,viewBox:'0 0 24 24',fill:'none',stroke:color,strokeWidth:2,strokeLinecap:'round',strokeLinejoin:'round',style:{flexShrink:0}},...nodes); }
+
+  // ---------- shared styles ----------
+  card(extra){ return Object.assign({background:'#fff',borderRadius:16,border:'1px solid #f1f5f9',boxShadow:'0 1px 2px rgba(0,0,0,.05)'},extra||{}); }
+  inS(extra){ return Object.assign({width:'100%',padding:'8px 12px',border:'1px solid #e2e8f0',borderRadius:8,fontSize:14,outline:'none',color:'#334155',background:'#fff'},extra||{}); }
+  labS(){ return {display:'block',fontSize:12,fontWeight:500,color:'#64748b',marginBottom:4}; }
+  btnP(extra){ return Object.assign({background:this.B,color:'#fff',border:'none',borderRadius:8,padding:'8px 16px',fontSize:14,fontWeight:600,cursor:'pointer',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6},extra||{}); }
+  btnO(extra){ return Object.assign({background:'#fff',color:'#475569',border:'1px solid #e2e8f0',borderRadius:8,padding:'8px 16px',fontSize:14,fontWeight:500,cursor:'pointer',display:'inline-flex',alignItems:'center',gap:6},extra||{}); }
+  iconBtn(extra){ return Object.assign({padding:6,border:'1px solid #e2e8f0',color:'#64748b',background:'#fff',borderRadius:6,cursor:'pointer',display:'inline-flex',alignItems:'center'},extra||{}); }
+
+  // ---------- dialogs ----------
+  alert(title,msg,type){ this.setState({dialog:{open:true,type:type||'info',title,msg,confirmText:'ตกลง'}}); }
+  confirm(title,msg,onOk,okText,cancelText){ this.setState({dialog:{open:true,type:'confirm',title,msg,confirmText:okText||'ยืนยัน',cancelText:cancelText||'ยกเลิก',onOk}}); }
+  closeDialog(){ this.setState({dialog:{open:false}}); }
+
+  // ---------- data actions ----------
+  persistDocs(d){ this.save('om_documents',d); }
+  setDocs(d){ this.setState({documents:d}); this.persistDocs(d); this.autoSync({documents:d}); }
+
+  newDoc(){ const docs=this.state.documents; const type='QUOTATION'; const last=docs.filter(x=>x.documentType===type).length;
+    const today=new Date().toISOString().split('T')[0]; const due=new Date(); due.setDate(due.getDate()+15);
+    const o=this.state.owner;
+    this.setState({view:'form', form:{ _new:true, id:'doc-'+Date.now(), documentType:type, documentNumber:this.genNum(type,last), date:today, dueDate:due.toISOString().split('T')[0], referenceNumber:'', selectedClientId:'', isCustom:false, customClient:{name:'',taxId:'',address:'',phone:'',email:''}, items:[{id:'it-'+Date.now(),description:'',quantity:1,pricePerUnit:0,unit:'งาน',total:0}], discount:0, isVatEnabled:o.useVat, vatRate:o.vatRate, isWithholdingTaxEnabled:o.useWithholdingTax, withholdingTaxRate:o.withholdingTaxRate, status:'draft', notes:'กำหนดยืนราคา 30 วันนับจากวันที่ออกใบเสนอราคา\nชำระเงินมัดจำ 50% ก่อนเริ่มปฏิบัติงาน' }}); }
+
+  editDoc(doc){ const exists=this.state.clients.some(c=>c.id===doc.clientId);
+    this.setState({view:'form', form:{ _new:false, id:doc.id, documentType:doc.documentType, documentNumber:doc.documentNumber, date:doc.date, dueDate:doc.dueDate||'', referenceNumber:doc.referenceNumber||'', selectedClientId:exists?doc.clientId:'custom', isCustom:!exists, customClient:{...doc.clientDetails}, items:doc.items.map(i=>({...i})), discount:doc.discount, isVatEnabled:doc.isVatEnabled, vatRate:doc.vatRate, isWithholdingTaxEnabled:doc.isWithholdingTaxEnabled, withholdingTaxRate:doc.withholdingTaxRate, status:doc.status, notes:doc.notes||'', createdAt:doc.createdAt }}); }
+
+  viewDocFn(doc){ this.setState({viewDoc:doc,view:'print'}); }
+
+  deleteDoc(id){ this.confirm('ยืนยันการลบเอกสาร','คุณแน่ใจหรือไม่ว่าต้องการลบเอกสารนี้ออกจากระบบ? (การกระทำนี้ไม่สามารถกู้คืนได้)',()=>{ this.setDocs(this.state.documents.filter(d=>d.id!==id)); this.closeDialog(); },'ลบเอกสาร','ยกเลิก'); }
+
+  duplicateDoc(doc){ this.confirm('ทำซ้ำเอกสาร','คุณต้องการคัดลอก (ทำซ้ำ) เอกสารเลขที่ "'+doc.documentNumber+'" ใช่หรือไม่?',()=>{ const dup={...doc,id:'doc-'+Date.now(),documentNumber:doc.documentNumber+'-COPY',date:new Date().toISOString().split('T')[0],status:'draft',createdAt:new Date().toISOString()}; this.closeDialog(); this.editDoc(dup); },'คัดลอกและแก้ไข','ยกเลิก'); }
+
+  convertDoc(doc,type){ const last=this.state.documents.filter(d=>d.documentType===type).length;
+    const conv={...doc,id:'doc-'+Date.now(),documentType:type,documentNumber:this.genNum(type,last),date:new Date().toISOString().split('T')[0],referenceNumber:doc.documentNumber,status:type==='RECEIPT'?'paid':'draft',createdAt:new Date().toISOString()};
+    this.setState({convMenu:null}); this.editDoc(conv); }
+
+  saveDoc(){ const f=this.state.form; let client;
+    if(f.isCustom){ if(!f.customClient.name||!f.customClient.address){ this.alert('ข้อมูลไม่ครบ','กรุณากรอกชื่อและที่อยู่ลูกค้า','error'); return; } client={id:'c-custom-'+Date.now(),name:f.customClient.name,taxId:f.customClient.taxId||'',address:f.customClient.address,phone:f.customClient.phone||'',email:f.customClient.email||''}; }
+    else { client=this.state.clients.find(c=>c.id===f.selectedClientId); if(!client){ this.alert('ยังไม่เลือกลูกค้า','กรุณาเลือกหรือกรอกข้อมูลลูกค้า','error'); return; } }
+    const items=f.items.filter(i=>i.description.trim()!==''); if(items.length===0){ this.alert('ไม่มีรายการ','กรุณากรอกรายละเอียดของรายการบริการ/สินค้าอย่างน้อย 1 รายการ','error'); return; }
+    const o=this.state.owner;
+    const doc={ id:f.id, documentType:f.documentType, documentNumber:f.documentNumber, date:f.date, dueDate:(f.documentType==='INVOICE'||f.documentType==='BILLING')?f.dueDate:undefined, referenceNumber:f.referenceNumber||undefined, clientId:client.id, clientDetails:client, ownerDetails:o, items:items.map(i=>({...i,total:i.quantity*i.pricePerUnit})), discount:f.discount, isVatEnabled:f.isVatEnabled, vatRate:f.vatRate, isWithholdingTaxEnabled:f.isWithholdingTaxEnabled, withholdingTaxRate:f.withholdingTaxRate, status:f.status, notes:f.notes, paymentBankName:o.bankName, paymentBankAccountName:o.bankAccountName, paymentBankAccountNumber:o.bankAccountNumber, createdAt:f.createdAt||new Date().toISOString() };
+    const exists=this.state.documents.some(d=>d.id===doc.id);
+    const updated=exists?this.state.documents.map(d=>d.id===doc.id?doc:d):[...this.state.documents,doc];
+    this.setDocs(updated); this.setState({form:null,view:'main',tab:'documents'}); }
+
+  updateForm(patch){ this.setState({form:{...this.state.form,...patch}}); }
+  setDocTypeForm(type){ const f=this.state.form; const patch={documentType:type};
+    if(f._new){ patch.documentNumber=this.genNum(type,this.state.documents.filter(d=>d.documentType===type).length); } this.updateForm(patch); }
+  updateItem(i,field,val){ const items=this.state.form.items.map((it,idx)=>{ if(idx!==i) return it; const u={...it,[field]:val}; const q=field==='quantity'?(+val||0):it.quantity; const p=field==='pricePerUnit'?(+val||0):it.pricePerUnit; u.total=q*p; return u; }); this.updateForm({items}); }
+  addItem(){ this.updateForm({items:[...this.state.form.items,{id:'it-'+Date.now(),description:'',quantity:1,pricePerUnit:0,unit:'ชิ้น',total:0}]}); }
+  addPreset(p){ const items=this.state.form.items; const ni={id:'it-'+Date.now(),description:p.name,quantity:1,pricePerUnit:p.price,unit:p.unit,total:p.price};
+    if(items.length===1&&items[0].description===''&&items[0].pricePerUnit===0) this.updateForm({items:[ni]}); else this.updateForm({items:[...items,ni]}); }
+  removeItem(i){ const items=this.state.form.items; if(items.length===1) this.updateForm({items:[{id:'it-'+Date.now(),description:'',quantity:1,pricePerUnit:0,unit:'ชิ้น',total:0}]}); else this.updateForm({items:items.filter((_,idx)=>idx!==i)}); }
+
+  clearAll(){ this.confirm('⚠️ ยืนยันการล้างข้อมูลตัวอย่าง','คุณต้องการล้างข้อมูลตัวอย่างทั้งหมด (เอกสาร, ลูกค้า, สินค้า) และรีเซ็ตข้อมูลผู้ประกอบการเป็นค่าว่าง เพื่อเริ่มกรอกข้อมูลจริงของคุณใช่หรือไม่?',()=>{
+    const empty={name:'',taxId:'',address:'',phone:'',email:'',website:'',bankName:'',bankAccountName:'',bankAccountNumber:'',signatureName:'',useVat:false,vatRate:7,useWithholdingTax:false,withholdingTaxRate:3};
+    this.setState({documents:[],clients:[],products:[],owner:empty,profileForm:{...empty}}); this.save('om_documents',[]); this.save('om_clients',[]); this.save('om_products',[]); this.save('om_owner',empty);
+    this.closeDialog(); this.alert('รีเซ็ตระบบสำเร็จ','ล้างข้อมูลตัวอย่างเรียบร้อยแล้ว ฐานข้อมูลพร้อมสำหรับป้อนข้อมูลจริงของคุณแล้วครับ','success'); },'ล้างข้อมูลทั้งหมด','ยกเลิก'); }
+
+  // client CRUD
+  saveClient(){ const c=this.state.clientModal; if(!c.name||!c.address){ this.alert('ข้อมูลไม่ครบ','กรุณากรอกชื่อและที่อยู่ลูกค้า','error'); return; }
+    let list; if(c.id) list=this.state.clients.map(x=>x.id===c.id?c:x); else list=[...this.state.clients,{...c,id:'c-'+Date.now()}];
+    this.setState({clients:list,clientModal:null}); this.save('om_clients',list); this.autoSync({clients:list}); }
+  deleteClient(id,name){ this.confirm('ยืนยันการลบลูกค้า','คุณต้องการลบข้อมูลลูกค้า "'+name+'" ใช่หรือไม่? (ไม่กระทบเอกสารที่สร้างไปแล้ว)',()=>{ const list=this.state.clients.filter(c=>c.id!==id); this.setState({clients:list}); this.save('om_clients',list); this.autoSync({clients:list}); this.closeDialog(); },'ลบข้อมูลลูกค้า','ยกเลิก'); }
+  // product CRUD
+  saveProduct(){ const p=this.state.productModal; if(!p.name){ this.alert('ข้อมูลไม่ครบ','กรุณากรอกชื่อรายการ','error'); return; }
+    let list; if(p.id) list=this.state.products.map(x=>x.id===p.id?p:x); else list=[...this.state.products,{...p,id:'p-'+Date.now()}];
+    this.setState({products:list,productModal:null}); this.save('om_products',list); this.autoSync({products:list}); }
+  deleteProduct(id,name){ this.confirm('ยืนยันการลบรายการ','คุณต้องการลบบริการ "'+name+'" ใช่หรือไม่?',()=>{ const list=this.state.products.filter(p=>p.id!==id); this.setState({products:list}); this.save('om_products',list); this.autoSync({products:list}); this.closeDialog(); },'ลบรายการ','ยกเลิก'); }
+  // profile
+  saveProfile(){ const p=this.state.profileForm; this.setState({owner:{...p},profileSaved:true}); this.save('om_owner',p); this.autoSync({owner:{...p}}); setTimeout(()=>{ try{this.setState({profileSaved:false});}catch(e){} },3000); }
+  setProfile(field,val){ this.setState({profileForm:{...this.state.profileForm,[field]:val}}); }
+
+  // ==================================================================
+  render_header(){ const h=React.createElement; const o=this.state.owner;
+    return h('header',{style:{background:this.B,color:'#fff',flexShrink:0,boxShadow:'0 2px 6px rgba(15,23,42,.15)'}},
+      h('div',{style:{maxWidth:1280,margin:'0 auto',padding:'0 24px'}},
+        h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',height:64,gap:12}},
+          h('div',{style:{display:'flex',alignItems:'center',gap:12,minWidth:0}},
+            h('div',{style:{width:40,height:40,borderRadius:12,background:'rgba(255,255,255,.1)',border:'1px solid rgba(255,255,255,.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}},this.ic('sheet',20,'#e2e8f0')),
+            h('div',{style:{minWidth:0}},
+              h('div',{style:{fontSize:15,fontWeight:800,display:'flex',alignItems:'center',gap:8,letterSpacing:'-.01em'}},'ระบบจัดทำเอกสารการเงิน',h('span',{style:{fontSize:10,color:'#cbd5e1',fontWeight:400,background:'rgba(255,255,255,.08)',padding:'2px 8px',borderRadius:999,border:'1px solid rgba(255,255,255,.12)'}},'บุคคลธรรมดา')),
+              h('div',{style:{fontSize:10.5,color:'#94a3b8',marginTop:2}},'ออกใบเสนอราคา • ใบแจ้งหนี้ • ใบวางบิล • ใบเสร็จรับเงิน'))),
+          h('div',{style:{display:'flex',alignItems:'center',gap:8,background:'rgba(255,255,255,.06)',padding:'6px 12px',borderRadius:12,border:'1px solid rgba(255,255,255,.1)',fontSize:12,flexShrink:0}},this.ic('building',14,'#94a3b8'),h('span',{style:{color:'#cbd5e1'}},'ผู้ประกอบการ: ',h('strong',{style:{color:'#fff'}},o.name||'—'))))));
+  }
+
+  render_nav(){ const h=React.createElement; const tabs=[['dashboard','แดชบอร์ดสรุป','trend'],['documents','จัดการเอกสารทั้งหมด','file'],['clients','ฐานข้อมูลลูกค้า','users'],['products','สินค้าและบริการ','brief'],['profile','ข้อมูลผู้ประกอบการ','user']];
+    return h('nav',{style:{background:'#fff',borderBottom:'1px solid #eef2f6',flexShrink:0,boxShadow:'0 1px 1px rgba(0,0,0,.02)'}},
+      h('div',{style:{maxWidth:1280,margin:'0 auto',padding:'0 24px'}},
+        h('div',{style:{display:'flex',gap:8,padding:'8px 0',overflowX:'auto'}},
+          ...tabs.map(t=>{ const active=this.state.tab===t[0]; return h('button',{key:t[0],onClick:()=>this.setState({tab:t[0]}),style:{display:'flex',alignItems:'center',gap:6,padding:'10px 14px',borderRadius:12,fontSize:12.5,fontWeight:700,whiteSpace:'nowrap',cursor:'pointer',border:'none',background:active?this.B:'transparent',color:active?'#fff':'#64748b'}},this.ic(t[2],16,active?'#fff':'#94a3b8'),t[1]); }))));
+  }
+
+  render_dialog(){ const h=React.createElement; const d=this.state.dialog; const isDanger=(d.title||'').includes('ลบ')||(d.title||'').includes('ล้าง');
+    const iconMap={success:['check',this.G,'#ecfdf5'],error:['x','#dc2626','#fef2f2'],confirm:['alert','#d97706','#fffbeb'],info:['info','#475569','#f1f5f9']};
+    const im=iconMap[d.type]||iconMap.info;
+    return h('div',{className:'om-fade om-noprint',style:{position:'fixed',inset:0,background:'rgba(2,6,23,.6)',backdropFilter:'blur(2px)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,zIndex:60},onClick:(e)=>{if(e.target===e.currentTarget)this.closeDialog();}},
+      h('div',{className:'om-slide',style:this.card({maxWidth:440,width:'100%',padding:24,borderRadius:20,boxShadow:'0 20px 50px rgba(2,6,23,.3)'})},
+        h('div',{style:{display:'flex',gap:16,alignItems:'flex-start'}},
+          h('div',{style:{width:40,height:40,borderRadius:999,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',background:im[2]}},this.ic(im[0],22,im[1])),
+          h('div',{style:{flex:1}},h('h3',{style:{margin:'0 0 6px',fontSize:15,fontWeight:700,color:'#0f172a'}},d.title),h('p',{style:{margin:0,fontSize:13,color:'#64748b',lineHeight:1.6,whiteSpace:'pre-line'}},d.msg))),
+        h('div',{style:{marginTop:24,paddingTop:16,borderTop:'1px solid #f1f5f9',display:'flex',justifyContent:'flex-end',gap:8}},
+          d.type==='confirm'?h('button',{onClick:()=>this.closeDialog(),style:this.btnO({fontWeight:700,fontSize:13})},d.cancelText):null,
+          h('button',{onClick:()=>{ if(d.type==='confirm'&&d.onOk) d.onOk(); else this.closeDialog(); },style:this.btnP({background:d.type==='confirm'?(isDanger?'#dc2626':this.G):this.B,fontWeight:700,fontSize:13})},d.confirmText))));
+  }
+
+  // ---------- GOOGLE SHEETS SYNC (Apps Script Web App) ----------
+  appsScriptCode(){ return ["function doGet(e){","  return out(sheet().getRange('A1').getValue() || '{}');","}","","function doPost(e){","  sheet().getRange('A1').setValue(e.postData.contents);","  return out(JSON.stringify({ok:true}));","}","","function sheet(){","  return SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];","}","","function out(s){","  return ContentService.createTextOutput(s)","    .setMimeType(ContentService.MimeType.JSON);","}"].join("\n"); }
+  gatherData(ov){ ov=ov||{}; const s=this.state; return { documents:ov.documents||s.documents, clients:ov.clients||s.clients, products:ov.products||s.products, owner:ov.owner||s.owner, _syncedAt:new Date().toISOString() }; }
+  saveSheetUrl(url){ this.save('om_sheet_url',url); this.setState({sheetUrl:url,connectModal:false}); }
+  disconnectSheet(){ this.confirm('ตัดการเชื่อมต่อ','ต้องการตัดการเชื่อมต่อจาก Google Sheets ใช่หรือไม่? (ข้อมูลในเครื่องยังอยู่ครบ)',()=>{ this.save('om_sheet_url',''); this.setState({sheetUrl:'',syncStatus:'idle',lastSynced:null}); this.closeDialog(); },'ตัดการเชื่อมต่อ','ยกเลิก'); }
+  async _push(data,showMsg){ const url=this.state.sheetUrl; if(!url) return; this.setState({syncing:true});
+    try{ await fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)}); this.setState({syncing:false,syncStatus:'success',lastSynced:new Date().toLocaleTimeString('th-TH')}); if(showMsg) this.alert('อัปโหลดข้อมูลสำเร็จ','สำรองข้อมูลทั้งหมดขึ้น Google Sheets เรียบร้อยแล้ว!','success'); }
+    catch(e){ this.setState({syncing:false,syncStatus:'error'}); if(showMsg) this.alert('อัปโหลดล้มเหลว','เชื่อมต่อ Google Sheets ไม่ได้ กรุณาตรวจสอบว่า URL ถูกต้องและตั้งค่าเป็น "ทุกคน (Anyone)" แล้ว','error'); } }
+  autoSync(ov){ if(this.state.sheetUrl) this._push(this.gatherData(ov),false); }
+  pushSync(){ if(!this.state.sheetUrl){ this.setState({connectModal:true,connectDraft:this.state.sheetUrl}); return; } this._push(this.gatherData(),true); }
+  async pullSync(){ const url=this.state.sheetUrl; if(!url) return;
+    this.confirm('⚠️ ยืนยันการดึงข้อมูลคืน','การดึงข้อมูลจาก Google Sheets จะเขียนทับข้อมูลในเครื่องนี้ทั้งหมด! ต้องการดำเนินการต่อหรือไม่?',async()=>{ this.closeDialog(); this.setState({syncing:true});
+      try{ const res=await fetch(url,{method:'GET'}); const text=await res.text(); const d=JSON.parse(text);
+        if(d&&d.documents){ this.setState({documents:d.documents||[],clients:d.clients||[],products:d.products||[],owner:d.owner||this.state.owner,profileForm:{...(d.owner||this.state.owner)},syncing:false,syncStatus:'success',lastSynced:new Date().toLocaleTimeString('th-TH')}); this.save('om_documents',d.documents||[]); this.save('om_clients',d.clients||[]); this.save('om_products',d.products||[]); this.save('om_owner',d.owner||this.state.owner); this.alert('ดึงข้อมูลสำเร็จ','นำเข้าข้อมูลจาก Google Sheets ทดแทนข้อมูลในเครื่องเรียบร้อยแล้ว!','success'); }
+        else { this.setState({syncing:false}); this.alert('ยังไม่มีข้อมูล','ยังไม่พบข้อมูลในชีต กรุณากด "อัปโหลด (Push)" อย่างน้อย 1 ครั้งก่อน','info'); } }
+      catch(e){ this.setState({syncing:false,syncStatus:'error'}); this.alert('ดึงข้อมูลล้มเหลว','อ่านข้อมูลจาก Google Sheets ไม่ได้ กรุณาตรวจสอบ URL และการตั้งค่าการเข้าถึง','error'); } },'ดึงข้อมูลและเขียนทับ','ยกเลิก'); }
+
+  render_syncBar(){ const h=React.createElement; const s=this.state; const connected=!!s.sheetUrl;
+    return h('div',{className:'om-noprint',style:{background:'#f1f5f9',borderBottom:'1px solid #e2e8f0'}},
+      h('div',{style:{maxWidth:1280,margin:'0 auto',padding:'12px 24px',display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:12}},
+        h('div',{style:{display:'flex',alignItems:'center',gap:10,fontSize:12,minWidth:0}},
+          h('div',{style:{width:10,height:10,borderRadius:999,flexShrink:0,background:connected?this.G:'#cbd5e1'}}),
+          connected?h('div',{style:{color:'#334155'}},h('span',{style:{fontWeight:600}},'เชื่อมต่อ Google Sheets แล้ว'),s.lastSynced?h('span',{style:{color:'#94a3b8',marginLeft:8}},'(ซิงค์ล่าสุด: '+s.lastSynced+')'):null,s.syncStatus==='error'?h('span',{style:{color:'#dc2626',marginLeft:8,fontWeight:600}},'• การซิงค์ล่าสุดมีปัญหา'):null):
+            h('span',{style:{color:'#64748b'}},'ฐานข้อมูลคลาวด์ Google Sheets: เชื่อมต่อเพื่อสำรองและซิงค์ข้อมูลลูกค้า บิล และบริการอย่างถาวร')),
+        h('div',{style:{display:'flex',flexWrap:'wrap',gap:8}},
+          connected?[
+            h('button',{key:'p',onClick:()=>this.pullSync(),disabled:s.syncing,style:this.btnO({padding:'6px 12px',fontSize:11,fontWeight:700,opacity:s.syncing?.5:1})},'ดึงข้อมูล (Pull)'),
+            h('button',{key:'u',onClick:()=>this.pushSync(),disabled:s.syncing,style:this.btnP({background:this.G,padding:'6px 12px',fontSize:11,fontWeight:700,opacity:s.syncing?.6:1})},s.syncing?'กำลังซิงค์...':'อัปโหลด (Push)'),
+            h('button',{key:'s',onClick:()=>this.setState({connectModal:true,connectDraft:s.sheetUrl}),style:this.btnO({padding:'6px 12px',fontSize:11,fontWeight:700})},'ตั้งค่า'),
+            h('button',{key:'d',onClick:()=>this.disconnectSheet(),style:this.btnO({padding:'6px 12px',fontSize:11,fontWeight:700,color:'#b91c1c',border:'1px solid #fecaca',background:'#fef2f2'})},'ตัดการเชื่อมต่อ')
+          ]:h('button',{onClick:()=>this.setState({connectModal:true,connectDraft:''}),style:this.btnP({background:this.G,padding:'6px 16px',fontSize:12,fontWeight:700})},this.ic('sheet',15,'#fff'),'เชื่อมต่อ Google Sheets'))));
+  }
+
+  render_connectModal(){ const h=React.createElement; const s=this.state; const code=this.appsScriptCode();
+    const step=(n,txt)=>h('div',{style:{display:'flex',gap:10,alignItems:'flex-start'}},h('span',{style:{flexShrink:0,width:20,height:20,borderRadius:999,background:this.B,color:'#fff',fontSize:11,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center'}},n),h('span',{style:{fontSize:12.5,color:'#475569',lineHeight:1.6}},txt));
+    return h('div',{className:'om-fade om-noprint',style:{position:'fixed',inset:0,background:'rgba(2,6,23,.6)',backdropFilter:'blur(2px)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,zIndex:60,overflowY:'auto'},onClick:e=>{if(e.target===e.currentTarget)this.setState({connectModal:false});}},
+      h('div',{className:'om-slide',style:this.card({width:'100%',maxWidth:620,borderRadius:20,overflow:'hidden',margin:'auto'})},
+        h('div',{style:{padding:20,borderBottom:'1px solid #f1f5f9',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'space-between'}},h('h3',{style:{margin:0,fontSize:16,fontWeight:700,color:'#1e293b',display:'flex',alignItems:'center',gap:8}},this.ic('sheet',18,this.G),'เชื่อมต่อ Google Sheets (ผ่าน Apps Script)'),h('button',{onClick:()=>this.setState({connectModal:false}),style:{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:4}},this.ic('x',20,'#94a3b8'))),
+        h('div',{style:{padding:20,display:'flex',flexDirection:'column',gap:16,maxHeight:'70vh',overflowY:'auto'}},
+          h('div',{style:{display:'flex',flexDirection:'column',gap:10}},
+            step(1,'สร้าง Google Sheet ใหม่ 1 ไฟล์ แล้วเปิดเมนู Extensions → Apps Script'),
+            step(2,'ลบโค้ดเดิมทั้งหมด แล้ววางโค้ดด้านล่างนี้ลงไป จากนั้นกดบันทึก (💾)'),
+            step(3,'กด Deploy → New deployment → เลือกชนิดเป็น "Web app"'),
+            step(4,'ตั้งค่า Execute as: "Me" และ Who has access: "Anyone" แล้วกด Deploy (อนุญาตสิทธิ์ตามที่ระบบขอ)'),
+            step(5,'คัดลอก "Web app URL" (ลงท้ายด้วย /exec) มาวางในช่องด้านล่าง')),
+          h('div',{style:{position:'relative'}},
+            h('pre',{style:{margin:0,background:'#0f172a',color:'#e2e8f0',padding:'14px 16px',borderRadius:12,fontSize:11.5,fontFamily:"'JetBrains Mono',monospace",overflowX:'auto',lineHeight:1.6,whiteSpace:'pre'}},code),
+            h('button',{onClick:()=>{ try{navigator.clipboard.writeText(code);}catch(e){} this.alert('คัดลอกแล้ว','คัดลอกโค้ด Apps Script ไปยังคลิปบอร์ดเรียบร้อยแล้ว','success'); },style:{position:'absolute',top:10,right:10,background:'rgba(255,255,255,.1)',color:'#fff',border:'1px solid rgba(255,255,255,.2)',borderRadius:8,padding:'4px 10px',fontSize:11,fontWeight:600,cursor:'pointer'}},'คัดลอกโค้ด')),
+          h('div',{},h('label',{style:this.labS()},'Web app URL (ลงท้ายด้วย /exec) *'),h('input',{value:s.connectDraft,onChange:e=>this.setState({connectDraft:e.target.value}),placeholder:'https://script.google.com/macros/s/XXXX/exec',style:this.inS({fontFamily:"'JetBrains Mono',monospace",fontSize:12})})),
+          h('div',{style:{paddingTop:12,borderTop:'1px solid #f1f5f9',display:'flex',justifyContent:'flex-end',gap:8}},h('button',{onClick:()=>this.setState({connectModal:false}),style:this.btnO()},'ยกเลิก'),h('button',{onClick:()=>{ const u=(s.connectDraft||'').trim(); if(!u.startsWith('https://')){ this.alert('URL ไม่ถูกต้อง','กรุณาวาง Web app URL ที่ขึ้นต้นด้วย https:// และลงท้ายด้วย /exec','error'); return; } this.saveSheetUrl(u); this.alert('เชื่อมต่อสำเร็จ','บันทึก URL เรียบร้อยแล้ว กด "อัปโหลด (Push)" เพื่อสำรองข้อมูลครั้งแรกได้เลยครับ','success'); },style:this.btnP({background:this.G})},'บันทึกการเชื่อมต่อ')))));
+  }
+
+  // ---------- DASHBOARD ----------
+  render_dashboard(){ const h=React.createElement; const {documents:docs,clients,products}=this.state;
+    const cs=(d)=>this.calcSummary(d).amountToPay;
+    const sumBy=(f)=>docs.filter(f).reduce((a,d)=>a+cs(d),0);
+    const totalVolume=sumBy(d=>d.status!=='cancelled'), totalPaid=sumBy(d=>d.status==='paid'), totalPending=sumBy(d=>d.status==='pending'), totalDraft=sumBy(d=>d.status==='draft');
+    const sc={paid:docs.filter(d=>d.status==='paid').length,pending:docs.filter(d=>d.status==='pending').length,draft:docs.filter(d=>d.status==='draft').length,cancelled:docs.filter(d=>d.status==='cancelled').length};
+    const total=docs.length;
+    const tc={QUOTATION:docs.filter(d=>d.documentType==='QUOTATION').length,INVOICE:docs.filter(d=>d.documentType==='INVOICE').length,BILLING:docs.filter(d=>d.documentType==='BILLING').length,RECEIPT:docs.filter(d=>d.documentType==='RECEIPT').length};
+    const recent=[...docs].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+    const hasSample=docs.some(d=>d.id==='doc-1'||d.id==='doc-2')||clients.some(c=>c.id==='c-1')||products.some(p=>p.id==='p-1');
+    const stat=(label,value,sub,subColor,iconName,iconColor,iconBg)=>h('div',{style:this.card({padding:20,display:'flex',alignItems:'center',justifyContent:'space-between'})},
+      h('div',{},h('span',{style:{fontSize:12,fontWeight:600,color:'#94a3b8',display:'block'}},label),h('span',{style:{fontSize:22,fontWeight:800,color:iconColor==='#0f172a'?'#0f172a':iconColor,fontFamily:"'JetBrains Mono',monospace",display:'block',margin:'4px 0'}},'฿'+this.fc(value)),h('span',{style:{fontSize:10.5,color:subColor,display:'block'}},sub)),
+      h('div',{style:{width:48,height:48,borderRadius:12,background:iconBg,color:iconColor,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}},this.ic(iconName,24,iconColor)));
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:24}},
+      hasSample?h('div',{className:'om-fade',style:{background:'#fffbeb',border:'1px solid rgba(217,119,6,.25)',borderRadius:16,padding:20,display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:16}},
+        h('div',{style:{maxWidth:640}},h('div',{style:{fontSize:14,fontWeight:700,color:'#92400e',marginBottom:4}},'💡 ระบบกำลังใช้ข้อมูลตัวอย่างเพื่อการทดลองใช้งาน'),h('p',{style:{margin:0,fontSize:12.5,color:'#b45309',lineHeight:1.6}},'กดปุ่มด้านขวาเพื่อล้างข้อมูลลูกค้า รายการบริการ และเอกสารจำลองทั้งหมด แล้วเริ่มตั้งค่าข้อมูลผู้ประกอบการจริงของคุณได้ทันที')),
+        h('button',{onClick:()=>this.clearAll(),style:{flexShrink:0,background:'#d97706',color:'#fff',border:'none',borderRadius:12,padding:'10px 16px',fontSize:12.5,fontWeight:700,cursor:'pointer'}},'ล้างข้อมูลตัวอย่าง เพื่อเริ่มใช้งานจริง')):null,
+      h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:16}},
+        stat('ยอดรวมธุรกรรมทั้งหมด',totalVolume,'*ไม่รวมบิลที่ยกเลิก','#94a3b8','trend','#0f172a','#f1f5f9'),
+        stat('ชำระเงินเรียบร้อยแล้ว',totalPaid,'('+sc.paid+' เอกสาร)','#34d399','check',this.G,'#ecfdf5'),
+        stat('ยอดค้างชำระ (Pending)',totalPending,'('+sc.pending+' เอกสาร)','#fbbf24','clock','#d97706','#fffbeb'),
+        stat('มูลค่าในแบบร่าง (Draft)',totalDraft,'('+sc.draft+' เอกสาร)','#94a3b8','file','#475569','#f1f5f9')),
+      h('div',{style:{display:'grid',gridTemplateColumns:'minmax(0,1fr) minmax(0,2fr)',gap:24}},
+        // left: status proportion + type breakdown
+        h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:24})},
+          h('div',{},h('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e293b'}},'สัดส่วนตามสถานะการเงิน'),h('p',{style:{margin:'2px 0 0',fontSize:12,color:'#94a3b8'}},'เปรียบเทียบสัดส่วนตามจำนวนเอกสารในระบบ')),
+          total>0?h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+            h('div',{style:{height:12,width:'100%',background:'#f1f5f9',borderRadius:999,display:'flex',overflow:'hidden'}},
+              h('div',{style:{background:this.G,height:'100%',width:(sc.paid/total*100)+'%'}}),h('div',{style:{background:'#f59e0b',height:'100%',width:(sc.pending/total*100)+'%'}}),h('div',{style:{background:'#94a3b8',height:'100%',width:(sc.draft/total*100)+'%'}}),h('div',{style:{background:'#f87171',height:'100%',width:(sc.cancelled/total*100)+'%'}})),
+            h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,fontSize:12}},
+              ...[['ชำระแล้ว',sc.paid,this.G],['รอชำระ',sc.pending,'#f59e0b'],['แบบร่าง',sc.draft,'#94a3b8'],['ยกเลิก',sc.cancelled,'#f87171']].map((x,i)=>h('div',{key:i,style:{display:'flex',alignItems:'center',gap:8}},h('div',{style:{width:10,height:10,borderRadius:999,background:x[2]}}),h('span',{style:{color:'#64748b'}},x[0]+' ('+x[1]+')'))))):
+            h('div',{style:{height:96,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,color:'#94a3b8',border:'1px dashed #e2e8f0',borderRadius:12}},'ยังไม่มีข้อมูลการเงินในการวิเคราะห์'),
+          h('hr',{style:{border:'none',borderTop:'1px solid #f1f5f9',margin:0}}),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+            h('h4',{style:{margin:0,fontSize:11,fontWeight:700,color:'#64748b',letterSpacing:'.05em',textTransform:'uppercase'}},'จำนวนเอกสารแยกตามประเภท'),
+            ...[['ใบเสนอราคา (Quotation)',tc.QUOTATION,'#3b82f6'],['ใบแจ้งหนี้ (Invoice)',tc.INVOICE,'#a855f7'],['ใบวางบิล (Billing Note)',tc.BILLING,'#f59e0b'],['ใบเสร็จรับเงิน (Receipt)',tc.RECEIPT,this.G]].map((x,i)=>h('div',{key:i,style:{display:'flex',flexDirection:'column',gap:5}},
+              h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12,fontWeight:500,color:'#475569'}},h('span',{},x[0]),h('strong',{style:{color:'#1e293b'}},x[1]+' ใบ')),
+              h('div',{style:{height:6,width:'100%',background:'#f8fafc',border:'1px solid #f1f5f9',borderRadius:999,overflow:'hidden'}},h('div',{style:{height:'100%',background:x[2],width:(total>0?x[1]/total*100:0)+'%',borderRadius:999}})))))),
+        // right: recent docs
+        h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',justifyContent:'space-between'})},
+          h('div',{},
+            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}},
+              h('div',{},h('h3',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e293b'}},'เอกสารทำล่าสุดในระบบ'),h('p',{style:{margin:'2px 0 0',fontSize:12,color:'#94a3b8'}},'รายการเอกสารทางการเงิน 5 ลำดับล่าสุด')),
+              h('button',{onClick:()=>this.setState({tab:'documents'}),style:{background:'none',border:'none',fontSize:12,fontWeight:600,color:'#64748b',cursor:'pointer',display:'flex',alignItems:'center',gap:2}},'ดูทั้งหมด',this.ic('chev',14,'#64748b'))),
+            recent.length>0?h('div',{},...recent.map((doc,idx)=>{ const su=this.calcSummary(doc); const tm=this.typeMeta(doc.documentType);
+              return h('div',{key:doc.id,onClick:()=>this.viewDocFn(doc),style:{padding:'12px 8px',margin:'0 -8px',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'space-between',cursor:'pointer',borderTop:idx?'1px solid #f8fafc':'none'}},
+                h('div',{style:{minWidth:0}},h('div',{style:{display:'flex',alignItems:'center',gap:8}},h('span',{style:{fontFamily:"'JetBrains Mono',monospace",fontWeight:700,fontSize:12,color:'#1e293b'}},doc.documentNumber),h('span',{style:{fontSize:9.5,fontWeight:700,padding:'1px 6px',borderRadius:4,color:tm[1],background:tm[2],border:'1px solid '+tm[3]}},tm[0])),h('p',{style:{margin:'2px 0 0',fontSize:12,color:'#64748b',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:320}},doc.clientDetails.name)),
+                h('div',{style:{textAlign:'right',flexShrink:0}},h('strong',{style:{fontSize:12,color:'#0f172a',fontFamily:"'JetBrains Mono',monospace",display:'block'}},'฿'+this.fc(su.amountToPay)),h('span',{style:{fontSize:10.5,color:'#94a3b8'}},this.ftd(doc.date,true)))); })):
+              h('div',{style:{padding:'48px 0',textAlign:'center',fontSize:12,color:'#94a3b8'}},'ไม่มีรายการเอกสารเพื่อแสดงผล')),
+          h('div',{style:{marginTop:16,paddingTop:16,borderTop:'1px solid #f8fafc',display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}},
+            ...[['clients','users',clients.length,'ลูกค้าทั้งหมด'],['products','brief',products.length,'รายการบริการ']].map((x,i)=>h('div',{key:i,onClick:()=>this.setState({tab:x[0]}),style:{padding:12,border:'1px solid #f1f5f9',borderRadius:12,background:'#f8fafc',cursor:'pointer',display:'flex',alignItems:'center',gap:12}},
+              h('div',{style:{width:32,height:32,borderRadius:8,background:'#f1f5f9',color:'#475569',display:'flex',alignItems:'center',justifyContent:'center'}},this.ic(x[1],16,'#475569')),
+              h('div',{},h('strong',{style:{fontSize:14,color:'#1e293b',display:'block',fontFamily:"'JetBrains Mono',monospace"}},x[2]),h('span',{style:{fontSize:10.5,color:'#94a3b8'}},x[3]))))))));
+  }
+
+  // ---------- DOCUMENT LIST ----------
+  render_docList(){ const h=React.createElement; const s=this.state;
+    const filtered=s.documents.filter(d=>{ const q=s.docSearch.toLowerCase(); const ms=d.documentNumber.toLowerCase().includes(q)||d.clientDetails.name.toLowerCase().includes(q)||d.items.some(i=>i.description.toLowerCase().includes(q)); const mt=s.docType==='ALL'||d.documentType===s.docType; const mst=s.docStatus==='ALL'||d.status===s.docStatus; return ms&&mt&&mst; }).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const typeTabs=[['ALL','เอกสารทั้งหมด'],['QUOTATION','ใบเสนอราคา'],['INVOICE','ใบแจ้งหนี้'],['BILLING','ใบวางบิล'],['RECEIPT','ใบเสร็จรับเงิน']];
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+      h('div',{style:this.card({padding:16,display:'flex',flexDirection:'column',gap:16})},
+        h('div',{style:{display:'flex',flexWrap:'wrap',gap:12}},
+          h('div',{style:{position:'relative',flex:'1 1 260px'}},h('span',{style:{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)',pointerEvents:'none'}},this.ic('search',16,'#94a3b8')),h('input',{value:s.docSearch,onChange:e=>this.setState({docSearch:e.target.value}),placeholder:'ค้นหาตามเลขที่บิล, ชื่อลูกค้า หรือรายการบริการ...',style:this.inS({paddingLeft:36})})),
+          h('select',{value:s.docStatus,onChange:e=>this.setState({docStatus:e.target.value}),style:this.inS({width:'auto',color:'#475569'})},h('option',{value:'ALL'},'ทุกสถานะการจ่ายเงิน'),h('option',{value:'draft'},'แบบร่าง (Draft)'),h('option',{value:'pending'},'รอชำระเงิน (Pending)'),h('option',{value:'paid'},'ชำระเงินแล้ว (Paid)'),h('option',{value:'cancelled'},'ยกเลิก (Cancelled)')),
+          h('button',{onClick:()=>this.newDoc(),style:this.btnP({marginLeft:'auto'})},this.ic('plus',16,'#fff'),'สร้างเอกสารใหม่')),
+        h('div',{style:{display:'flex',gap:4,borderBottom:'1px solid #f1f5f9',overflowX:'auto'}},...typeTabs.map(t=>{ const a=s.docType===t[0]; return h('button',{key:t[0],onClick:()=>this.setState({docType:t[0]}),style:{padding:'8px 14px',fontSize:12,fontWeight:a?700:600,whiteSpace:'nowrap',border:'none',borderBottom:'2px solid '+(a?this.B:'transparent'),background:'none',color:a?'#1e293b':'#94a3b8',cursor:'pointer'}},t[1]); }))),
+      h('div',{style:this.card({overflow:'hidden'})},
+        h('div',{style:{overflowX:'auto'}},h('table',{style:{width:'100%',borderCollapse:'collapse',textAlign:'left',fontSize:13,color:'#475569'}},
+          h('thead',{},h('tr',{style:{background:'#f8fafc',borderBottom:'1px solid #f1f5f9'}},...['เลขที่เอกสาร','ประเภท','วันที่','ชื่อลูกค้า','ยอดสุทธิ (บาท)','สถานะ','จัดการ'].map((c,i)=>h('th',{key:i,style:{padding:'12px 20px',fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.03em',textAlign:(i===4||i===6)?'right':'left',whiteSpace:'nowrap'}},c)))),
+          h('tbody',{},filtered.length>0?filtered.map(doc=>{ const su=this.calcSummary(doc); const tm=this.typeMeta(doc.documentType); const sm=this.statusMeta(doc.status);
+            return h('tr',{key:doc.id,style:{borderTop:'1px solid #f8fafc'}},
+              h('td',{style:{padding:'14px 20px',fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:'#0f172a',fontSize:12}},doc.documentNumber),
+              h('td',{style:{padding:'14px 20px'}},h('span',{style:{padding:'2px 8px',fontSize:10,fontWeight:700,borderRadius:6,border:'1px solid '+tm[3],color:tm[1],background:tm[2],whiteSpace:'nowrap'}},tm[0])),
+              h('td',{style:{padding:'14px 20px',fontSize:12,color:'#64748b',whiteSpace:'nowrap'}},this.ftd(doc.date,true)),
+              h('td',{style:{padding:'14px 20px'}},h('p',{style:{margin:0,fontWeight:600,color:'#1e293b',fontSize:12,maxWidth:260,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'},title:doc.clientDetails.name},doc.clientDetails.name)),
+              h('td',{style:{padding:'14px 20px',textAlign:'right',fontFamily:"'JetBrains Mono',monospace",fontWeight:700,color:'#0f172a'}},this.fc(su.amountToPay)),
+              h('td',{style:{padding:'14px 20px',whiteSpace:'nowrap'}},h('span',{style:{display:'inline-flex',alignItems:'center',gap:4,padding:'4px 8px',borderRadius:999,fontSize:11,fontWeight:600,color:sm[1],background:sm[2],border:'1px solid '+sm[3]}},this.ic(sm[4],12,sm[1]),sm[0])),
+              h('td',{style:{padding:'14px 20px'}},h('div',{style:{display:'flex',justifyContent:'flex-end',gap:6,position:'relative'}},
+                h('button',{title:'เปิดดู/พิมพ์',onClick:()=>this.viewDocFn(doc),style:this.iconBtn()},this.ic('eye',15)),
+                h('button',{title:'แก้ไข',onClick:()=>this.editDoc(doc),style:this.iconBtn()},this.ic('edit',15)),
+                h('button',{title:'ทำซ้ำ',onClick:()=>this.duplicateDoc(doc),style:this.iconBtn()},this.ic('copy',15)),
+                h('div',{style:{position:'relative'}},h('button',{title:'แปลงประเภท',onClick:()=>this.setState({convMenu:s.convMenu===doc.id?null:doc.id}),style:this.iconBtn()},this.ic('swap',15)),
+                  s.convMenu===doc.id?h('div',{className:'om-fade',style:{position:'absolute',right:0,bottom:'100%',marginBottom:4,background:'#fff',border:'1px solid #f1f5f9',boxShadow:'0 12px 30px rgba(2,6,23,.15)',borderRadius:10,padding:'4px 0',width:190,zIndex:30,textAlign:'left'}},
+                    h('p',{style:{margin:0,fontSize:10,color:'#94a3b8',padding:'4px 12px',borderBottom:'1px solid #f8fafc',fontWeight:700,textTransform:'uppercase',letterSpacing:'.04em'}},'แปลงเอกสารชุดนี้เป็น:'),
+                    ...['QUOTATION','INVOICE','BILLING','RECEIPT'].filter(t=>t!==doc.documentType).map(t=>h('button',{key:t,onClick:()=>this.convertDoc(doc,t),style:{display:'block',width:'100%',textAlign:'left',padding:'7px 12px',fontSize:12,fontWeight:500,color:'#475569',background:'none',border:'none',cursor:'pointer'}},this.typeMeta(t)[0]+' ('+({QUOTATION:'Quotation',INVOICE:'Invoice',BILLING:'Billing',RECEIPT:'Receipt'})[t]+')'))):null),
+                h('button',{title:'ลบ',onClick:()=>this.deleteDoc(doc.id),style:this.iconBtn({border:'1px solid #fee2e2',color:'#ef4444'})},this.ic('trash',15))))); }):
+            h('tr',{},h('td',{colSpan:7,style:{padding:'64px 20px',textAlign:'center',color:'#94a3b8'}},h('div',{style:{display:'flex',justifyContent:'center',marginBottom:12}},this.ic('file',44,'#cbd5e1')),h('p',{style:{margin:0,fontSize:14,fontWeight:600}},'ไม่พบเอกสารทางการเงิน'),h('p',{style:{margin:'4px 0 0',fontSize:12,color:'#94a3b8'}},'ลองเริ่มสร้างโดยกดปุ่ม "สร้างเอกสารใหม่" ด้านบน'))))))));
+  }
+
+  // ---------- DOCUMENT FORM ----------
+  render_form(){ const h=React.createElement; const f=this.state.form; const s=this.state; if(!f) return null;
+    const su=this.calcSummary({items:f.items,discount:f.discount,isVatEnabled:f.isVatEnabled,vatRate:f.vatRate,isWithholdingTaxEnabled:f.isWithholdingTaxEnabled,withholdingTaxRate:f.withholdingTaxRate});
+    const o=s.owner; const showClient=f.isCustom||f.selectedClientId;
+    const sectionHead=(iconName,text)=>h('h3',{style:{margin:'0 0 4px',fontSize:14,fontWeight:700,color:'#1e293b',display:'flex',alignItems:'center',gap:8}},this.ic(iconName,16,'#94a3b8'),text);
+    const smallLab=(t)=>h('label',{style:{display:'block',fontSize:11,fontWeight:500,color:'#94a3b8',marginBottom:4}},t);
+    return h('div',{},
+      h('div',{style:{marginBottom:16,display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:12,flexWrap:'wrap'}},
+        h('div',{},h('h2',{style:{margin:0,fontSize:20,fontWeight:700,color:'#0f172a'}},f._new?'สร้างเอกสารทางการเงินชุดใหม่':('แก้ไขเอกสารหมายเลข '+f.documentNumber)),h('p',{style:{margin:'2px 0 0',fontSize:12,color:'#94a3b8'}},'กรอกข้อมูลผู้ว่าจ้าง บริการ และเงื่อนไขเพื่อจัดทำแบบฟอร์ม'))),
+      h('div',{style:{display:'grid',gridTemplateColumns:'minmax(0,2fr) minmax(0,1fr)',gap:24,alignItems:'start'}},
+        // LEFT
+        h('div',{style:{display:'flex',flexDirection:'column',gap:24}},
+          // type & number
+          h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:16})},sectionHead('file','ประเภทและเลขที่เอกสาร'),
+            h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:16}},
+              h('div',{},smallLab('ประเภทเอกสาร *'),h('select',{value:f.documentType,onChange:e=>this.setDocTypeForm(e.target.value),style:this.inS()},h('option',{value:'QUOTATION'},'ใบเสนอราคา (Quotation)'),h('option',{value:'INVOICE'},'ใบแจ้งหนี้ (Invoice)'),h('option',{value:'BILLING'},'ใบวางบิล (Billing)'),h('option',{value:'RECEIPT'},'ใบเสร็จรับเงิน (Receipt)'))),
+              h('div',{},smallLab('เลขที่เอกสาร *'),h('input',{value:f.documentNumber,onChange:e=>this.updateForm({documentNumber:e.target.value}),style:this.inS({fontFamily:"'JetBrains Mono',monospace"})})),
+              h('div',{},smallLab('สถานะเอกสาร'),h('select',{value:f.status,onChange:e=>this.updateForm({status:e.target.value}),style:this.inS()},h('option',{value:'draft'},'แบบร่าง (Draft)'),h('option',{value:'pending'},'รอชำระเงิน (Pending)'),h('option',{value:'paid'},'ชำระเงินแล้ว (Paid)'),h('option',{value:'cancelled'},'ยกเลิก (Cancelled)'))),
+              h('div',{},smallLab('วันที่เอกสาร *'),h('input',{type:'date',value:f.date,onChange:e=>this.updateForm({date:e.target.value}),style:this.inS()})),
+              (f.documentType==='INVOICE'||f.documentType==='BILLING')?h('div',{},smallLab('วันครบกำหนดชำระ'),h('input',{type:'date',value:f.dueDate,onChange:e=>this.updateForm({dueDate:e.target.value}),style:this.inS()})):null,
+              h('div',{},smallLab('อ้างอิงเอกสารอื่น (ถ้ามี)'),h('input',{value:f.referenceNumber,onChange:e=>this.updateForm({referenceNumber:e.target.value}),placeholder:'เช่น QT-2607-0001',style:this.inS()})))),
+          // client
+          h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:16})},sectionHead('users','ข้อมูลผู้ว่าจ้าง / ลูกค้า'),
+            h('div',{},smallLab('เลือกจากรายชื่อที่มี *'),h('select',{value:f.selectedClientId,onChange:e=>{ const v=e.target.value; if(v==='custom') this.updateForm({selectedClientId:'custom',isCustom:true,customClient:{name:'',taxId:'',address:'',phone:'',email:''}}); else { const c=s.clients.find(x=>x.id===v); this.updateForm({selectedClientId:v,isCustom:false,customClient:c?{...c}:{name:'',taxId:'',address:'',phone:'',email:''}}); } },style:this.inS()},h('option',{value:''},'-- กรุณาเลือกรายชื่อลูกค้า --'),...s.clients.map(c=>h('option',{key:c.id,value:c.id},c.name)),h('option',{value:'custom'},'✍️ พิมพ์ข้อมูลลูกค้าใหม่สำหรับเอกสารนี้...'))),
+            showClient?h('div',{className:'om-fade',style:{padding:16,background:'#f8fafc',borderRadius:12,border:'1px solid #f1f5f9',display:'flex',flexDirection:'column',gap:12}},
+              h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},h('span',{style:{fontSize:11,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.04em'}},f.isCustom?'ข้อมูลลูกค้าพิมพ์ใหม่':'พรีวิวข้อมูลลูกค้า'),f.isCustom?h('span',{style:{fontSize:10,color:'#b45309',background:'#fffbeb',padding:'2px 8px',borderRadius:999,fontWeight:600}},'เฉพาะเอกสารนี้'):null),
+              h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}},
+                h('div',{},smallLab('ชื่อลูกค้า / บริษัท *'),h('input',{disabled:!f.isCustom,value:f.customClient.name||'',onChange:e=>this.updateForm({customClient:{...f.customClient,name:e.target.value}}),style:this.inS({background:f.isCustom?'#fff':'#f1f5f9',padding:'6px 12px'})})),
+                h('div',{},smallLab('เลขผู้เสียภาษี 13 หลัก'),h('input',{disabled:!f.isCustom,maxLength:13,value:f.customClient.taxId||'',onChange:e=>this.updateForm({customClient:{...f.customClient,taxId:e.target.value}}),style:this.inS({background:f.isCustom?'#fff':'#f1f5f9',padding:'6px 12px'})})),
+                h('div',{},smallLab('เบอร์โทรศัพท์'),h('input',{disabled:!f.isCustom,value:f.customClient.phone||'',onChange:e=>this.updateForm({customClient:{...f.customClient,phone:e.target.value}}),style:this.inS({background:f.isCustom?'#fff':'#f1f5f9',padding:'6px 12px'})})),
+                h('div',{},smallLab('อีเมล'),h('input',{disabled:!f.isCustom,value:f.customClient.email||'',onChange:e=>this.updateForm({customClient:{...f.customClient,email:e.target.value}}),style:this.inS({background:f.isCustom?'#fff':'#f1f5f9',padding:'6px 12px'})})),
+                h('div',{style:{gridColumn:'1 / -1'}},smallLab('ที่อยู่ผู้เสียภาษี / ที่อยู่จัดส่ง *'),h('textarea',{disabled:!f.isCustom,rows:2,value:f.customClient.address||'',onChange:e=>this.updateForm({customClient:{...f.customClient,address:e.target.value}}),style:this.inS({background:f.isCustom?'#fff':'#f1f5f9',padding:'6px 12px',resize:'vertical'})})))):null),
+          // line items
+          h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:16})},
+            h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},sectionHead('brief','รายละเอียดรายการและบริการ'),h('button',{onClick:()=>this.addItem(),style:{display:'inline-flex',alignItems:'center',gap:6,padding:'6px 12px',background:'#f1f5f9',color:'#334155',border:'none',borderRadius:8,fontSize:12,fontWeight:600,cursor:'pointer'}},this.ic('plus',14,'#334155'),'เพิ่มรายการว่าง')),
+            s.products.length>0?h('div',{style:{display:'flex',flexDirection:'column',gap:6}},h('span',{style:{fontSize:12,fontWeight:600,color:'#94a3b8'}},'ดึงด่วนจากแคตตาล็อกสินค้า/บริการของคุณ:'),h('div',{style:{display:'flex',flexWrap:'wrap',gap:6}},...s.products.map(p=>h('button',{key:p.id,onClick:()=>this.addPreset(p),style:{padding:'4px 10px',background:'#f8fafc',border:'1px solid #e2e8f0',borderRadius:999,fontSize:11,color:'#64748b',cursor:'pointer',fontWeight:500}},'+ '+(p.name.length>28?p.name.slice(0,28)+'…':p.name)+' ',h('strong',{style:{color:'#1e293b'}},'(฿'+this.fc(p.price)+')'))))):null,
+            h('div',{style:{display:'flex',flexDirection:'column',gap:12}},...f.items.map((it,idx)=>h('div',{key:it.id,className:'om-fade',style:{padding:16,border:'1px solid #f1f5f9',borderRadius:12,background:'#fbfcfd',display:'flex',gap:12,alignItems:'flex-start'}},
+              h('div',{style:{width:28,height:28,borderRadius:999,background:'#f1f5f9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,color:'#64748b',flexShrink:0,marginTop:20}},idx+1),
+              h('div',{style:{flex:1,display:'grid',gridTemplateColumns:'2.2fr .8fr .8fr 1fr',gap:10}},
+                h('div',{},smallLab('รายละเอียด *'),h('textarea',{rows:1,value:it.description,onChange:e=>this.updateItem(idx,'description',e.target.value),placeholder:'เช่น ออกแบบโลโก้บริษัท',style:this.inS({padding:'6px 10px',resize:'vertical'})})),
+                h('div',{},smallLab('จำนวน *'),h('input',{type:'number',min:0,value:it.quantity,onChange:e=>this.updateItem(idx,'quantity',parseFloat(e.target.value)||0),style:this.inS({padding:'6px 10px',textAlign:'center',fontFamily:"'JetBrains Mono',monospace"})})),
+                h('div',{},smallLab('หน่วยนับ'),h('input',{value:it.unit,onChange:e=>this.updateItem(idx,'unit',e.target.value),style:this.inS({padding:'6px 10px',textAlign:'center'})})),
+                h('div',{},smallLab('ราคา/หน่วย *'),h('input',{type:'number',min:0,value:it.pricePerUnit,onChange:e=>this.updateItem(idx,'pricePerUnit',parseFloat(e.target.value)||0),style:this.inS({padding:'6px 10px',textAlign:'right',fontFamily:"'JetBrains Mono',monospace"})}))),
+              h('div',{style:{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:6,marginTop:18,flexShrink:0}},h('div',{style:{textAlign:'right'}},h('span',{style:{fontSize:10,color:'#94a3b8',display:'block'}},'รวมบรรทัด'),h('strong',{style:{fontSize:13,color:'#1e293b',fontFamily:"'JetBrains Mono',monospace"}},this.fc(it.total))),h('button',{title:'ลบ',onClick:()=>this.removeItem(idx),style:this.iconBtn({border:'1px solid #fee2e2',color:'#ef4444',padding:8})},this.ic('trash',15)))))),
+          // bank + notes
+          h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:16})},sectionHead('dollar','ข้อมูลรับเงินและหมายเหตุเงื่อนไข'),
+            h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:12,padding:12,background:'#f8fafc',borderRadius:12,border:'1px solid #f1f5f9'}},
+              ...[['บัญชีธนาคาร:',o.bankName],['เลขบัญชีรับโอน:',o.bankAccountNumber],['ชื่อบัญชี:',o.bankAccountName]].map((x,i)=>h('div',{key:i},h('span',{style:{fontSize:10,color:'#94a3b8',display:'block'}},x[0]),h('strong',{style:{fontSize:12,color:'#334155',display:'block',marginTop:2,fontFamily:i===1?"'JetBrains Mono',monospace":'inherit'}},x[1]||'—')))),
+            h('div',{},smallLab('เงื่อนไขการชำระเงิน / หมายเหตุ (แสดงบนเอกสารพิมพ์)'),h('textarea',{rows:3,value:f.notes,onChange:e=>this.updateForm({notes:e.target.value}),style:this.inS({resize:'vertical'})})))),
+        // RIGHT summary
+        h('div',{style:this.card({padding:24,display:'flex',flexDirection:'column',gap:16,position:'sticky',top:24})},
+          h('h4',{style:{margin:0,fontSize:14,fontWeight:700,color:'#1e293b',paddingBottom:12,borderBottom:'1px solid #f1f5f9'}},'📊 สรุปยอดเงินและภาษีในบิลนี้'),
+          h('div',{},smallLab('ส่วนลดเงินสด (บาท)'),h('input',{type:'number',min:0,value:f.discount||'',onChange:e=>this.updateForm({discount:parseFloat(e.target.value)||0}),placeholder:'0.00',style:this.inS({textAlign:'right',fontFamily:"'JetBrains Mono',monospace",fontWeight:600})})),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+            h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},h('label',{style:{display:'flex',alignItems:'center',gap:8,fontSize:12,fontWeight:600,color:'#475569',cursor:'pointer'}},h('input',{type:'checkbox',checked:f.isVatEnabled,onChange:e=>this.updateForm({isVatEnabled:e.target.checked}),style:{accentColor:this.B}}),'ภาษีมูลค่าเพิ่ม (VAT)'),f.isVatEnabled?h('div',{style:{display:'flex',alignItems:'center',gap:4}},h('input',{type:'number',min:0,max:100,value:f.vatRate,onChange:e=>this.updateForm({vatRate:parseFloat(e.target.value)||0}),style:this.inS({width:52,padding:'2px 6px',textAlign:'center',fontFamily:"'JetBrains Mono',monospace"})}),h('span',{style:{fontSize:12}},'%')):null),
+            h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between'}},h('label',{style:{display:'flex',alignItems:'center',gap:8,fontSize:12,fontWeight:600,color:'#475569',cursor:'pointer'}},h('input',{type:'checkbox',checked:f.isWithholdingTaxEnabled,onChange:e=>this.updateForm({isWithholdingTaxEnabled:e.target.checked}),style:{accentColor:this.B}}),'หักภาษี ณ ที่จ่าย (WHT)'),f.isWithholdingTaxEnabled?h('div',{style:{display:'flex',alignItems:'center',gap:4}},h('input',{type:'number',min:0,max:100,value:f.withholdingTaxRate,onChange:e=>this.updateForm({withholdingTaxRate:parseFloat(e.target.value)||0}),style:this.inS({width:52,padding:'2px 6px',textAlign:'center',fontFamily:"'JetBrains Mono',monospace"})}),h('span',{style:{fontSize:12}},'%')):null)),
+          h('hr',{style:{border:'none',borderTop:'1px solid #f1f5f9',margin:0}}),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:8,fontSize:12}},
+            h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#64748b'}},'รวมค่าบริการ (ก่อนหักลด):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.subtotal)+' บาท')),
+            f.discount>0?h('div',{style:{display:'flex',justifyContent:'space-between',color:'#dc2626',fontWeight:500}},h('span',{},'ส่วนลด:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},'-'+this.fc(f.discount)+' บาท')):null,
+            f.isVatEnabled?h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#64748b'}},'ภาษีมูลค่าเพิ่ม ('+f.vatRate+'%):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.vatAmount)+' บาท')):null,
+            h('div',{style:{display:'flex',justifyContent:'space-between',fontWeight:600,color:'#1e293b',borderTop:'1px solid #f1f5f9',paddingTop:6}},h('span',{},'รวมยอดขายสุทธิ:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.totalAmount)+' บาท')),
+            f.isWithholdingTaxEnabled?h('div',{style:{display:'flex',justifyContent:'space-between',color:'#b45309'}},h('span',{},'หักภาษี ณ ที่จ่าย ('+f.withholdingTaxRate+'%):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},'-'+this.fc(su.withholdingTaxAmount)+' บาท')):null,
+            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'2px solid '+this.B,marginTop:4,padding:'10px',background:'#f8fafc',borderRadius:12,fontWeight:800,color:'#0f172a'}},h('span',{},'เงินรับสุทธิ (Net):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace",fontSize:16}},this.fc(su.amountToPay)+' บาท'))),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:8,paddingTop:8}},
+            h('button',{onClick:()=>this.saveDoc(),style:this.btnP({padding:'11px',fontSize:14,borderRadius:12})},this.ic('save',16,'#fff'),'บันทึกข้อมูลเอกสาร'),
+            h('button',{onClick:()=>this.setState({form:null,view:'main'}),style:this.btnO({padding:'11px',justifyContent:'center',borderRadius:12})},'ยกเลิก / ย้อนกลับ'))))));
+  }
+
+  // ---------- PRINT / A4 ----------
+  render_print(){ const h=React.createElement; const doc=this.state.viewDoc; if(!doc) return null; const su=this.calcSummary(doc);
+    const titles={QUOTATION:['ใบเสนอราคา','QUOTATION'],INVOICE:['ใบแจ้งหนี้','INVOICE'],BILLING:['ใบวางบิล / ใบแจ้งหนี้','BILLING NOTE / INVOICE'],RECEIPT:['ใบเสร็จรับเงิน','RECEIPT']}[doc.documentType];
+    const sm=this.statusMeta(doc.status); const o=doc.ownerDetails; const c=doc.clientDetails;
+    const rowP={padding:'10px 12px'};
+    const emptyRows=doc.items.length<2?Array.from({length:2-doc.items.length}):[];
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:24}},
+      h('div',{className:'om-noprint',style:this.card({padding:16,display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:16})},
+        h('button',{onClick:()=>this.setState({viewDoc:null,view:'main'}),style:this.btnO()},this.ic('back',16),'ย้อนกลับ'),
+        h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+          h('span',{style:{fontSize:12,color:'#64748b',background:'#f8fafc',padding:'8px 12px',borderRadius:8,border:'1px solid #f1f5f9',display:'inline-flex',alignItems:'center',gap:6}},this.ic('file',14,'#94a3b8'),'สถานะ: ',h('strong',{style:{color:sm[1]}},sm[0])),
+          h('button',{onClick:()=>window.print(),style:this.btnP()},this.ic('print',16,'#fff'),'พิมพ์เอกสาร / บันทึก PDF'))),
+      h('div',{className:'om-noprint',style:{background:'#f8fafc',border:'1px dashed #e2e8f0',borderRadius:12,padding:14,fontSize:12,color:'#64748b',textAlign:'center'}},'💡 กดปุ่ม "พิมพ์เอกสาร / บันทึก PDF" แล้วเลือกเครื่องพิมพ์เป็น "Save as PDF" • ในการตั้งค่าให้เลือกซ่อนหัว/ท้ายกระดาษ (Headers & Footers) เพื่อเอกสารที่สะอาดที่สุด'),
+      h('div',{id:'om-paper',style:{background:'#fff',margin:'0 auto',boxShadow:'0 4px 24px rgba(2,6,23,.1)',border:'1px solid #e2e8f0',padding:'48px',width:'100%',maxWidth:'210mm',minHeight:'297mm',position:'relative',color:'#1e293b',boxSizing:'border-box'}},
+        (doc.documentType==='RECEIPT'&&doc.status==='paid')?h('div',{style:{position:'absolute',top:56,right:56,border:'3px dashed rgba(5,150,105,.3)',color:'rgba(5,150,105,.6)',borderRadius:12,padding:'8px 16px',transform:'rotate(12deg)',display:'flex',alignItems:'center',gap:6,fontWeight:700,fontSize:14,letterSpacing:'.15em',pointerEvents:'none'}},this.ic('check',18,'rgba(5,150,105,.5)'),'PAID / ชำระแล้ว'):null,
+        // header
+        h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:32,borderBottom:'2px solid '+this.B,paddingBottom:24}},
+          h('div',{style:{display:'flex',flexDirection:'column',gap:8}},
+            h('div',{style:{display:'flex',alignItems:'center',gap:12}},h('div',{style:{width:40,height:40,borderRadius:8,background:this.B,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:18}},(o.name||'K').trim().charAt(0)||'K'),h('div',{},h('h1',{style:{margin:0,fontSize:16,fontWeight:700,color:'#0f172a',lineHeight:1.2}},o.name||'—'),h('p',{style:{margin:0,fontSize:10,color:'#94a3b8',fontFamily:"'JetBrains Mono',monospace"}},'ผู้จัดทำเอกสาร (บุคคลธรรมดา)'))),
+            h('div',{style:{fontSize:11.5,color:'#475569',lineHeight:1.7,marginTop:4}},h('p',{style:{margin:0}},h('strong',{},'ที่อยู่: '),o.address),h('p',{style:{margin:0}},h('strong',{},'เลขประจำตัวผู้เสียภาษี: '),this.fid(o.taxId)),h('p',{style:{margin:0}},h('strong',{},'โทร: '),this.fph(o.phone)),o.email?h('p',{style:{margin:0}},h('strong',{},'อีเมล: '),o.email):null,o.website?h('p',{style:{margin:0}},h('strong',{},'เว็บไซต์: '),o.website):null)),
+          h('div',{style:{display:'flex',flexDirection:'column',alignItems:'flex-end',justifyContent:'space-between',gap:16,textAlign:'right'}},
+            h('div',{},h('h2',{style:{margin:0,fontSize:22,fontWeight:800,color:'#0f172a',letterSpacing:'-.02em',whiteSpace:'nowrap'}},titles[0]),h('span',{style:{fontSize:12,fontWeight:600,color:'#94a3b8',letterSpacing:'.1em',fontFamily:"'JetBrains Mono',monospace"}},titles[1])),
+            h('div',{style:{fontSize:11.5,background:'#f8fafc',padding:12,borderRadius:8,border:'1px solid #f1f5f9',width:256,display:'flex',flexDirection:'column',gap:4}},
+              h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#94a3b8'}},'เลขที่ / No:'),h('strong',{style:{color:'#1e293b',fontFamily:"'JetBrains Mono',monospace"}},doc.documentNumber)),
+              h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#94a3b8'}},'วันที่ / Date:'),h('span',{style:{color:'#334155'}},this.ftd(doc.date))),
+              (doc.dueDate&&(doc.documentType==='INVOICE'||doc.documentType==='BILLING'))?h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#94a3b8'}},'ครบกำหนด / Due:'),h('strong',{style:{color:'#0f172a'}},this.ftd(doc.dueDate))):null,
+              doc.referenceNumber?h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#94a3b8'}},'อ้างอิง / Ref:'),h('span',{style:{color:'#334155',fontFamily:"'JetBrains Mono',monospace"}},doc.referenceNumber)):null))),
+        // customer
+        h('div',{style:{margin:'24px 0',padding:16,borderRadius:12,border:'1px solid #e2e8f0',background:'#fbfcfd'}},h('h3',{style:{margin:'0 0 8px',fontSize:11,fontWeight:700,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'.05em'}},'ลูกค้า / Customer'),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,fontSize:11.5}},
+            h('div',{},h('p',{style:{margin:0,fontWeight:700,color:'#0f172a',fontSize:13}},c.name),h('p',{style:{margin:'4px 0 0',color:'#475569',lineHeight:1.6}},h('strong',{},'ที่อยู่: '),c.address)),
+            h('div',{style:{paddingLeft:16,borderLeft:'1px solid #e2e8f0',color:'#475569',lineHeight:1.7}},c.taxId?h('p',{style:{margin:0}},h('strong',{},'เลขผู้เสียภาษี: '),this.fid(c.taxId)):null,h('p',{style:{margin:0}},h('strong',{},'โทร: '),this.fph(c.phone)),c.email?h('p',{style:{margin:0}},h('strong',{},'อีเมล: '),c.email):null))),
+        // items table
+        h('table',{style:{width:'100%',borderCollapse:'collapse',fontSize:11.5,marginTop:8}},
+          h('thead',{},h('tr',{style:{background:this.B,color:'#fff'}},...[['ลำดับ','No.','center',44],['รายละเอียดบริการ / สินค้า','Description','left',null],['จำนวน','Qty','right',60],['หน่วย','Unit','center',60],['ราคา/หน่วย','Unit Price','right',100],['จำนวนเงิน (บาท)','Amount','right',110]].map((c2,i)=>h('th',{key:i,style:{padding:'8px 12px',textAlign:c2[2],width:c2[3]||undefined,fontSize:11}},c2[0],h('br'),h('span',{style:{fontSize:9.5,fontWeight:400,fontFamily:"'JetBrains Mono',monospace",opacity:.8}},c2[1]))))),
+          h('tbody',{},...doc.items.map((it,i)=>h('tr',{key:it.id,style:{borderBottom:'1px solid #f1f5f9',verticalAlign:'top'}},
+            h('td',{style:Object.assign({textAlign:'center',color:'#94a3b8',fontFamily:"'JetBrains Mono',monospace"},rowP)},i+1),
+            h('td',{style:Object.assign({fontWeight:500,color:'#1e293b',whiteSpace:'pre-line',lineHeight:1.6},rowP)},it.description),
+            h('td',{style:Object.assign({textAlign:'right',fontFamily:"'JetBrains Mono',monospace"},rowP)},it.quantity),
+            h('td',{style:Object.assign({textAlign:'center',color:'#64748b'},rowP)},it.unit),
+            h('td',{style:Object.assign({textAlign:'right',fontFamily:"'JetBrains Mono',monospace"},rowP)},this.fc(it.pricePerUnit)),
+            h('td',{style:Object.assign({textAlign:'right',fontWeight:600,color:'#0f172a',fontFamily:"'JetBrains Mono',monospace"},rowP)},this.fc(it.total)))),
+            ...emptyRows.map((_,i)=>h('tr',{key:'e'+i,style:{height:28,borderBottom:'1px solid #f8fafc'}},...Array.from({length:6}).map((__,j)=>h('td',{key:j,style:{padding:'8px 12px'}})))))),
+        // totals
+        h('div',{style:{display:'grid',gridTemplateColumns:'7fr 5fr',gap:16,marginTop:24,paddingTop:16,borderTop:'2px solid '+this.B}},
+          h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+            h('div',{style:{background:'#f8fafc',border:'1px solid #f1f5f9',borderRadius:8,padding:8,fontWeight:700,textAlign:'center',fontSize:11.5,color:'#334155'}},'จำนวนเงินตัวอักษร: ('+this.thb(su.amountToPay)+')'),
+            doc.documentType!=='QUOTATION'?h('div',{style:{padding:12,border:'1px solid #e2e8f0',borderRadius:8,fontSize:11,lineHeight:1.7,color:'#475569',background:'#fbfcfd'}},h('p',{style:{margin:'0 0 4px',fontWeight:700,color:'#1e293b'}},'🏦 ข้อมูลการชำระเงินผ่านการโอนเข้าบัญชี:'),h('p',{style:{margin:0}},h('strong',{},'ธนาคาร: '),doc.paymentBankName||o.bankName),h('p',{style:{margin:0}},h('strong',{},'ชื่อบัญชี: '),doc.paymentBankAccountName||o.bankAccountName),h('p',{style:{margin:0}},h('strong',{},'เลขที่บัญชี: '),h('span',{style:{fontFamily:"'JetBrains Mono',monospace",fontWeight:600}},doc.paymentBankAccountNumber||o.bankAccountNumber)),h('p',{style:{margin:'4px 0 0',fontSize:10,color:'#94a3b8',fontStyle:'italic'}},'*กรุณาส่งหลักฐานการโอนเงินเพื่อยืนยันการชำระเงินทุกครั้ง')):null,
+            doc.notes?h('div',{style:{fontSize:11,color:'#64748b'}},h('strong',{style:{color:'#475569'}},'หมายเหตุ / เงื่อนไข:'),h('p',{style:{margin:'2px 0 0',whiteSpace:'pre-line'}},doc.notes)):null),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:6,fontSize:11.5}},
+            h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{style:{color:'#64748b'}},'รวมเป็นเงิน / Subtotal:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.subtotal))),
+            doc.discount>0?h('div',{style:{display:'flex',justifyContent:'space-between',color:'#dc2626'}},h('span',{},'ส่วนลด / Discount:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},'-'+this.fc(doc.discount))):null,
+            doc.discount>0?h('div',{style:{display:'flex',justifyContent:'space-between',fontWeight:500,color:'#475569'}},h('span',{},'หลังหักส่วนลด:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.discountedSubtotal))):null,
+            doc.isVatEnabled?h('div',{style:{display:'flex',justifyContent:'space-between'}},h('span',{},'VAT ('+doc.vatRate+'%):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.vatAmount))):null,
+            h('div',{style:{display:'flex',justifyContent:'space-between',borderTop:'1px solid #e2e8f0',paddingTop:6,fontWeight:500,color:'#334155'}},h('span',{},'รวมเงินทั้งสิ้น / Total:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},this.fc(su.totalAmount))),
+            doc.isWithholdingTaxEnabled?h('div',{style:{display:'flex',justifyContent:'space-between',color:'#64748b',fontStyle:'italic'}},h('span',{},'หัก ณ ที่จ่าย ('+doc.withholdingTaxRate+'%):'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace"}},'-'+this.fc(su.withholdingTaxAmount))):null,
+            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',borderTop:'2px solid '+this.B,paddingTop:8,marginTop:2,background:'#f8fafc',padding:'8px 10px',borderRadius:8,fontWeight:800,color:'#0f172a'}},h('span',{},'ยอดที่ต้องชำระ / Net:'),h('span',{style:{fontFamily:"'JetBrains Mono',monospace",fontSize:14}},this.fc(su.amountToPay)+' บาท')))),
+        // signatures
+        h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:48,marginTop:40,textAlign:'center',fontSize:11.5}},
+          h('div',{style:{display:'flex',flexDirection:'column',gap:24}},h('div',{style:{borderBottom:'1px solid #cbd5e1',width:192,margin:'0 auto',height:40}}),h('div',{},h('p',{style:{margin:0,fontWeight:700}},'ผู้รับเอกสาร / ผู้ว่าจ้าง'),h('p',{style:{margin:'4px 0 0',fontSize:10,color:'#94a3b8'}},'วันที่ / Date: ...........................'))),
+          h('div',{style:{display:'flex',flexDirection:'column',gap:24}},h('div',{style:{position:'relative',width:192,margin:'0 auto',height:40,display:'flex',alignItems:'center',justifyContent:'center'}},h('span',{style:{fontFamily:'serif',fontStyle:'italic',color:'rgba(148,163,184,.4)',fontSize:22,transform:'rotate(-8deg)',position:'absolute'}},o.signatureName||o.name),h('div',{style:{borderBottom:'1px solid #cbd5e1',width:'100%',position:'absolute',bottom:0}})),h('div',{},h('p',{style:{margin:0,fontWeight:700}},'ผู้จัดทำเอกสาร / ผู้รับเงิน'),h('p',{style:{margin:'4px 0 0',color:'#475569',fontWeight:500}},'('+(o.signatureName||o.name||'—')+')'),h('p',{style:{margin:'4px 0 0',fontSize:10,color:'#94a3b8'}},'วันที่ / Date: '+this.ftd(doc.date)))))));
+  }
+
+  // ---------- CLIENTS ----------
+  render_clients(){ const h=React.createElement; const s=this.state; const q=s.clientSearch.toLowerCase();
+    const list=s.clients.filter(c=>c.name.toLowerCase().includes(q)||(c.taxId&&c.taxId.includes(s.clientSearch))||(c.phone||'').includes(s.clientSearch)||(c.email||'').toLowerCase().includes(q));
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+      h('div',{style:this.card({padding:16,display:'flex',flexWrap:'wrap',gap:12,alignItems:'center'})},
+        h('div',{style:{position:'relative',flex:'1 1 260px'}},h('span',{style:{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)'}},this.ic('search',16,'#94a3b8')),h('input',{value:s.clientSearch,onChange:e=>this.setState({clientSearch:e.target.value}),placeholder:'ค้นหาลูกค้าด้วยชื่อ, เลขผู้เสียภาษี, เบอร์โทร หรืออีเมล...',style:this.inS({paddingLeft:36})})),
+        h('button',{onClick:()=>this.setState({clientModal:{id:'',name:'',taxId:'',address:'',phone:'',email:'',notes:''}}),style:this.btnP()},this.ic('plus',16,'#fff'),'เพิ่มรายชื่อลูกค้า')),
+      h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))',gap:16}},
+        list.length>0?list.map(c=>h('div',{key:c.id,style:this.card({padding:20,display:'flex',flexDirection:'column',justifyContent:'space-between'})},
+          h('div',{},h('div',{style:{display:'flex',alignItems:'flex-start',gap:10}},h('div',{style:{width:40,height:40,borderRadius:999,background:'#f1f5f9',color:'#475569',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,flexShrink:0}},c.name.substring(0,2)),h('div',{},h('h4',{style:{margin:0,fontSize:13.5,fontWeight:600,color:'#1e293b',lineHeight:1.3}},c.name),c.taxId?h('p',{style:{margin:'2px 0 0',fontSize:11.5,color:'#94a3b8'}},'เลขผู้เสียภาษี: '+this.fid(c.taxId)):null)),
+            h('div',{style:{marginTop:16,display:'flex',flexDirection:'column',gap:6,fontSize:12,color:'#475569'}},
+              h('p',{style:{margin:0,display:'flex',gap:6}},h('span',{style:{fontWeight:500,color:'#94a3b8',width:52,flexShrink:0}},'ที่อยู่:'),h('span',{},c.address)),
+              c.phone?h('p',{style:{margin:0,display:'flex',gap:6}},h('span',{style:{fontWeight:500,color:'#94a3b8',width:52,flexShrink:0}},'โทร:'),h('span',{},this.fph(c.phone))):null,
+              c.email?h('p',{style:{margin:0,display:'flex',gap:6}},h('span',{style:{fontWeight:500,color:'#94a3b8',width:52,flexShrink:0}},'อีเมล:'),h('span',{},c.email)):null,
+              c.notes?h('p',{style:{margin:'4px 0 0',display:'flex',gap:6,background:'#f8fafc',padding:8,borderRadius:8,color:'#64748b',fontStyle:'italic'}},this.ic('info',14,'#94a3b8'),h('span',{},c.notes)):null)),
+          h('div',{style:{marginTop:16,paddingTop:12,borderTop:'1px solid #f8fafc',display:'flex',justifyContent:'flex-end',gap:8}},
+            h('button',{onClick:()=>this.setState({clientModal:{...c}}),style:this.btnO({padding:'6px 12px',fontSize:12,fontWeight:600})},this.ic('edit',14),'แก้ไข'),
+            h('button',{onClick:()=>this.deleteClient(c.id,c.name),style:this.btnO({padding:'6px 12px',fontSize:12,fontWeight:600,color:'#dc2626',border:'1px solid #fee2e2'})},this.ic('trash',14,'#dc2626'),'ลบ')))):
+        h('div',{style:this.card({padding:48,textAlign:'center',color:'#94a3b8',gridColumn:'1 / -1'})},h('div',{style:{display:'flex',justifyContent:'center',marginBottom:12}},this.ic('users',44,'#cbd5e1')),h('p',{style:{margin:0,fontSize:14}},'ไม่พบข้อมูลลูกค้าตามที่ค้นหา'))),
+      s.clientModal?this.render_clientModal():null);
+  }
+  render_clientModal(){ const h=React.createElement; const c=this.state.clientModal; const up=(p)=>this.setState({clientModal:{...c,...p}}); const lab=(t)=>h('label',{style:this.labS()},t);
+    return h('div',{className:'om-fade',style:{position:'fixed',inset:0,background:'rgba(0,0,0,.4)',backdropFilter:'blur(2px)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,zIndex:60},onClick:e=>{if(e.target===e.currentTarget)this.setState({clientModal:null});}},
+      h('div',{className:'om-slide',style:this.card({width:'100%',maxWidth:520,borderRadius:20,overflow:'hidden'})},
+        h('div',{style:{padding:20,borderBottom:'1px solid #f1f5f9',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'space-between'}},h('h3',{style:{margin:0,fontSize:16,fontWeight:600,color:'#1e293b'}},c.id?'แก้ไขรายชื่อลูกค้า':'เพิ่มรายชื่อลูกค้าใหม่'),h('button',{onClick:()=>this.setState({clientModal:null}),style:{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:4}},this.ic('x',20,'#94a3b8'))),
+        h('div',{style:{padding:20,display:'flex',flexDirection:'column',gap:16}},
+          h('div',{},lab('ชื่อลูกค้า / ชื่อบริษัท *'),h('input',{value:c.name,onChange:e=>up({name:e.target.value}),style:this.inS()})),
+          h('div',{},lab('เลขผู้เสียภาษี 13 หลัก'),h('input',{maxLength:13,value:c.taxId||'',onChange:e=>up({taxId:e.target.value}),style:this.inS()})),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}},h('div',{},lab('เบอร์โทรศัพท์'),h('input',{value:c.phone||'',onChange:e=>up({phone:e.target.value}),style:this.inS()})),h('div',{},lab('อีเมล'),h('input',{value:c.email||'',onChange:e=>up({email:e.target.value}),style:this.inS()}))),
+          h('div',{},lab('ที่อยู่ลูกค้า *'),h('textarea',{rows:3,value:c.address,onChange:e=>up({address:e.target.value}),style:this.inS({resize:'vertical'})})),
+          h('div',{},lab('หมายเหตุภายใน (ไม่ปรากฏบนเอกสาร)'),h('input',{value:c.notes||'',onChange:e=>up({notes:e.target.value}),style:this.inS()})),
+          h('div',{style:{paddingTop:12,borderTop:'1px solid #f1f5f9',display:'flex',justifyContent:'flex-end',gap:8}},h('button',{onClick:()=>this.setState({clientModal:null}),style:this.btnO()},'ยกเลิก'),h('button',{onClick:()=>this.saveClient(),style:this.btnP()},'บันทึกข้อมูล')))));
+  }
+
+  // ---------- PRODUCTS ----------
+  render_products(){ const h=React.createElement; const s=this.state; const q=s.productSearch.toLowerCase();
+    const list=s.products.filter(p=>p.name.toLowerCase().includes(q)||p.unit.toLowerCase().includes(q));
+    return h('div',{style:{display:'flex',flexDirection:'column',gap:16}},
+      h('div',{style:this.card({padding:16,display:'flex',flexWrap:'wrap',gap:12,alignItems:'center'})},
+        h('div',{style:{position:'relative',flex:'1 1 260px'}},h('span',{style:{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)'}},this.ic('search',16,'#94a3b8')),h('input',{value:s.productSearch,onChange:e=>this.setState({productSearch:e.target.value}),placeholder:'ค้นหาบริการหรือสินค้าด้วยชื่อ หรือหน่วยนับ...',style:this.inS({paddingLeft:36})})),
+        h('button',{onClick:()=>this.setState({productModal:{id:'',name:'',price:0,unit:'ชิ้น'}}),style:this.btnP()},this.ic('plus',16,'#fff'),'เพิ่มรายการบริการ / สินค้า')),
+      h('div',{style:this.card({overflow:'hidden'})},h('div',{style:{overflowX:'auto'}},h('table',{style:{width:'100%',borderCollapse:'collapse',fontSize:13,textAlign:'left',color:'#475569'}},
+        h('thead',{},h('tr',{style:{background:'#f8fafc',borderBottom:'1px solid #f1f5f9'}},...[['ชื่อรายการบริการ / สินค้า','left'],['ราคาเริ่มต้น/หน่วย (บาท)','right'],['หน่วยนับ','left'],['จัดการ','right']].map((c,i)=>h('th',{key:i,style:{padding:'12px 20px',fontSize:11,fontWeight:700,color:'#64748b',textTransform:'uppercase',letterSpacing:'.03em',textAlign:c[1]}},c[0])))),
+        h('tbody',{},list.length>0?list.map(p=>h('tr',{key:p.id,style:{borderTop:'1px solid #f8fafc'}},
+          h('td',{style:{padding:'14px 20px',fontWeight:500,color:'#1e293b'}},p.name),
+          h('td',{style:{padding:'14px 20px',textAlign:'right',fontWeight:600,color:'#0f172a',fontFamily:"'JetBrains Mono',monospace"}},this.fc(p.price)),
+          h('td',{style:{padding:'14px 20px'}},h('span',{style:{padding:'4px 10px',background:'#f1f5f9',borderRadius:999,color:'#64748b',fontSize:12,fontWeight:500}},p.unit)),
+          h('td',{style:{padding:'14px 20px'}},h('div',{style:{display:'flex',justifyContent:'flex-end',gap:6}},h('button',{title:'แก้ไข',onClick:()=>this.setState({productModal:{...p}}),style:this.iconBtn()},this.ic('edit',15)),h('button',{title:'ลบ',onClick:()=>this.deleteProduct(p.id,p.name),style:this.iconBtn({border:'1px solid #fee2e2',color:'#ef4444'})},this.ic('trash',15))))))
+        :h('tr',{},h('td',{colSpan:4,style:{padding:'48px 20px',textAlign:'center',color:'#94a3b8'}},h('div',{style:{display:'flex',justifyContent:'center',marginBottom:8}},this.ic('tag',44,'#cbd5e1')),h('p',{style:{margin:0,fontSize:14}},'ไม่พบข้อมูลบริการหรือสินค้า')))))),
+      s.productModal?this.render_productModal():null));
+  }
+  render_productModal(){ const h=React.createElement; const p=this.state.productModal; const up=(x)=>this.setState({productModal:{...p,...x}}); const lab=(t)=>h('label',{style:this.labS()},t);
+    return h('div',{className:'om-fade',style:{position:'fixed',inset:0,background:'rgba(0,0,0,.4)',backdropFilter:'blur(2px)',display:'flex',alignItems:'center',justifyContent:'center',padding:16,zIndex:60},onClick:e=>{if(e.target===e.currentTarget)this.setState({productModal:null});}},
+      h('div',{className:'om-slide',style:this.card({width:'100%',maxWidth:440,borderRadius:20,overflow:'hidden'})},
+        h('div',{style:{padding:20,borderBottom:'1px solid #f1f5f9',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'space-between'}},h('h3',{style:{margin:0,fontSize:16,fontWeight:600,color:'#1e293b'}},p.id?'แก้ไขรายการบริการ / สินค้า':'เพิ่มรายการบริการ / สินค้าใหม่'),h('button',{onClick:()=>this.setState({productModal:null}),style:{background:'none',border:'none',cursor:'pointer',color:'#94a3b8',padding:4}},this.ic('x',20,'#94a3b8'))),
+        h('div',{style:{padding:20,display:'flex',flexDirection:'column',gap:16}},
+          h('div',{},lab('ชื่อรายการบริการ / สินค้า *'),h('input',{value:p.name,onChange:e=>up({name:e.target.value}),style:this.inS()})),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}},h('div',{},lab('ราคาเริ่มต้น (บาท) *'),h('input',{type:'number',min:0,value:p.price,onChange:e=>up({price:parseFloat(e.target.value)||0}),style:this.inS({fontFamily:"'JetBrains Mono',monospace"})})),h('div',{},lab('หน่วยนับ *'),h('input',{value:p.unit,onChange:e=>up({unit:e.target.value}),style:this.inS()}))),
+          h('div',{style:{paddingTop:12,borderTop:'1px solid #f1f5f9',display:'flex',justifyContent:'flex-end',gap:8}},h('button',{onClick:()=>this.setState({productModal:null}),style:this.btnO()},'ยกเลิก'),h('button',{onClick:()=>this.saveProduct(),style:this.btnP()},'บันทึกข้อมูล')))));
+  }
+
+  // ---------- PROFILE ----------
+  render_profile(){ const h=React.createElement; const p=this.state.profileForm; const set=(f,v)=>this.setProfile(f,v); const lab=(t)=>h('label',{style:this.labS()},t);
+    const toggle=(field,title,desc)=>h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:12,border:'1px solid #f1f5f9',borderRadius:12,background:'#f8fafc'}},
+      h('div',{style:{paddingRight:16}},h('label',{style:{fontSize:13,fontWeight:500,color:'#334155',display:'block'}},title),h('span',{style:{fontSize:11.5,color:'#94a3b8',display:'block',marginTop:2,lineHeight:1.5}},desc)),
+      h('button',{onClick:()=>set(field,!p[field]),style:{width:44,height:24,borderRadius:999,border:'none',cursor:'pointer',background:p[field]?this.B:'#e2e8f0',position:'relative',flexShrink:0,transition:'background .15s'}},h('span',{style:{position:'absolute',top:2,left:p[field]?22:2,width:20,height:20,borderRadius:999,background:'#fff',boxShadow:'0 1px 2px rgba(0,0,0,.2)',transition:'left .15s'}})));
+    return h('div',{style:this.card({overflow:'hidden'})},
+      h('div',{style:{padding:24,borderBottom:'1px solid #f1f5f9',background:'#f8fafc'}},h('h2',{style:{margin:0,fontSize:18,fontWeight:600,color:'#1e293b'}},'ตั้งค่าข้อมูลผู้ประกอบการ (บุคคลธรรมดา)'),h('p',{style:{margin:'4px 0 0',fontSize:12,color:'#94a3b8'}},'แก้ไขข้อมูลของคุณเพื่อแสดงบนหัวเอกสาร ใบเสนอราคา ใบแจ้งหนี้ และใบเสร็จรับเงิน')),
+      h('div',{style:{padding:24,display:'flex',flexDirection:'column',gap:24}},
+        this.state.profileSaved?h('div',{className:'om-fade',style:{display:'flex',alignItems:'center',gap:8,padding:16,background:'#ecfdf5',color:'#047857',borderRadius:12,border:'1px solid #a7f3d0',fontSize:13}},this.ic('check',20,this.G),'บันทึกข้อมูลผู้ประกอบการเรียบร้อยแล้ว! เอกสารที่ออกต่อจากนี้จะใช้ข้อมูลชุดใหม่นี้'):null,
+        h('div',{},h('h3',{style:{margin:'0 0 12px',fontSize:14,fontWeight:600,color:'#334155',display:'flex',alignItems:'center',gap:8}},this.ic('user',16,'#94a3b8'),'ข้อมูลส่วนตัวและการติดต่อ'),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}},
+            h('div',{},lab('ชื่อ-นามสกุล / ชื่อผู้เสียภาษี *'),h('input',{value:p.name,onChange:e=>set('name',e.target.value),style:this.inS()})),
+            h('div',{},lab('เลขประจำตัวประชาชน / ผู้เสียภาษี 13 หลัก *'),h('input',{maxLength:13,value:p.taxId,onChange:e=>set('taxId',e.target.value),style:this.inS()}),h('p',{style:{margin:'4px 0 0',fontSize:10,color:'#94a3b8'}},'รูปแบบ: '+(this.fid(p.taxId)||'ยังไม่ได้ระบุ'))),
+            h('div',{},lab('เบอร์โทรศัพท์ *'),h('input',{value:p.phone,onChange:e=>set('phone',e.target.value),style:this.inS()})),
+            h('div',{},lab('อีเมล'),h('input',{value:p.email,onChange:e=>set('email',e.target.value),style:this.inS()})),
+            h('div',{style:{gridColumn:'1 / -1'}},lab('เว็บไซต์ / เพจ (ถ้ามี)'),h('input',{value:p.website||'',onChange:e=>set('website',e.target.value),style:this.inS()})),
+            h('div',{style:{gridColumn:'1 / -1'}},lab('ที่อยู่ตามบัตรประชาชน / ที่อยู่ติดต่อ *'),h('textarea',{rows:3,value:p.address,onChange:e=>set('address',e.target.value),style:this.inS({resize:'vertical'})})))),
+        h('hr',{style:{border:'none',borderTop:'1px solid #f1f5f9',margin:0}}),
+        h('div',{},h('h3',{style:{margin:'0 0 12px',fontSize:14,fontWeight:600,color:'#334155',display:'flex',alignItems:'center',gap:8}},this.ic('bank',16,'#94a3b8'),'ข้อมูลการรับชำระเงิน (แสดงบนเอกสารสำหรับให้ลูกค้าโอนเงิน)'),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16}},
+            h('div',{},lab('ธนาคาร *'),h('input',{value:p.bankName,onChange:e=>set('bankName',e.target.value),style:this.inS()})),
+            h('div',{},lab('ชื่อบัญชี *'),h('input',{value:p.bankAccountName,onChange:e=>set('bankAccountName',e.target.value),style:this.inS()})),
+            h('div',{},lab('เลขที่บัญชี *'),h('input',{value:p.bankAccountNumber,onChange:e=>set('bankAccountNumber',e.target.value),style:this.inS()})))),
+        h('hr',{style:{border:'none',borderTop:'1px solid #f1f5f9',margin:0}}),
+        h('div',{},h('h3',{style:{margin:'0 0 12px',fontSize:14,fontWeight:600,color:'#334155',display:'flex',alignItems:'center',gap:8}},this.ic('shield',16,'#94a3b8'),'ตั้งค่าเริ่มต้นภาษีและลายเซ็น'),
+          h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24}},
+            h('div',{style:{display:'flex',flexDirection:'column',gap:12}},toggle('useVat','จดทะเบียนภาษีมูลค่าเพิ่ม (VAT)','เปิดใช้หากคุณจดทะเบียน VAT 7% (ปกติบุคคลธรรมดารายได้ไม่ถึง 1.8 ล้านมักไม่ได้จด)'),p.useVat?h('div',{className:'om-fade',style:{paddingLeft:12,borderLeft:'2px solid #e2e8f0'}},lab('อัตราภาษีมูลค่าเพิ่ม (%)'),h('input',{type:'number',min:0,max:100,value:p.vatRate,onChange:e=>set('vatRate',parseFloat(e.target.value)||0),style:this.inS({width:128})})):null),
+            h('div',{style:{display:'flex',flexDirection:'column',gap:12}},toggle('useWithholdingTax','ภาษีหัก ณ ที่จ่าย (Withholding Tax)','แสดงตัวเลือกหัก ณ ที่จ่าย กรณีผู้จ้าง (บริษัท) ต้องหักภาษีคุณ'),p.useWithholdingTax?h('div',{className:'om-fade',style:{paddingLeft:12,borderLeft:'2px solid #e2e8f0'}},lab('อัตราภาษีหัก ณ ที่จ่าย (%)'),h('input',{type:'number',min:0,max:100,value:p.withholdingTaxRate,onChange:e=>set('withholdingTaxRate',parseFloat(e.target.value)||0),style:this.inS({width:128})}),h('span',{style:{fontSize:10,color:'#94a3b8',display:'block',marginTop:4}},'ปกติบุคคลธรรมดา ค่าบริการและจ้างทำของ หัก ณ ที่จ่าย 3%')):null)),
+          h('div',{style:{marginTop:16,maxWidth:'50%'}},lab('ชื่อกำกับท้ายลายเซ็น'),h('input',{value:p.signatureName||'',onChange:e=>set('signatureName',e.target.value),placeholder:'เช่น (นายสมชาย รักดี)',style:this.inS()}),h('p',{style:{margin:'4px 0 0',fontSize:10,color:'#94a3b8'}},'จะแสดงในช่องผู้ลงนาม / ผู้รับเงิน'))),
+        h('div',{style:{paddingTop:16,borderTop:'1px solid #f1f5f9',display:'flex',flexWrap:'wrap',alignItems:'center',justifyContent:'space-between',gap:12}},
+          h('button',{onClick:()=>this.clearAll(),style:this.btnO({color:'#b91c1c',border:'1px solid #fecaca',background:'#fef2f2',fontSize:12,fontWeight:700})},this.ic('trash',14,'#b91c1c'),'ล้างข้อมูลตัวอย่างระบบทั้งหมด'),
+          h('button',{onClick:()=>this.saveProfile(),style:this.btnP({padding:'10px 24px'})},'บันทึกข้อมูลทั้งหมด'))));
+  }
+
+  view(){ return this.renderApp(); }
+  renderApp(){ const h=React.createElement; const s=this.state; let content;
+    if(s.view==='form') content=this.render_form();
+    else if(s.view==='print') content=this.render_print();
+    else content = s.tab==='dashboard'?this.render_dashboard(): s.tab==='documents'?this.render_docList(): s.tab==='clients'?this.render_clients(): s.tab==='products'?this.render_products(): this.render_profile();
+    return h('div',{style:{minHeight:'100vh',display:'flex',flexDirection:'column',color:'#334155',fontFamily:"'Anuphan',system-ui,sans-serif"}},
+      h('div',{className:'om-noprint'},this.render_header(), s.view==='main'?this.render_nav():null, s.view==='main'?this.render_syncBar():null),
+      h('main',{style:{flex:1,width:'100%',maxWidth:1280,margin:'0 auto',padding:24,boxSizing:'border-box'}},h('div',{className:'om-fade'},content)),
+      h('footer',{className:'om-noprint',style:{background:'#fff',borderTop:'1px solid #f1f5f9',padding:24,textAlign:'center',fontSize:12,color:'#94a3b8',flexShrink:0}},'© 2026 ระบบจัดการและออกเอกสารการเงินฉบับบุคคลธรรมดา — จัดทำตามแนวปฏิบัติภาษีสำหรับผู้รับจ้างอิสระ'),
+      s.connectModal?this.render_connectModal():null,
+      s.dialog.open?this.render_dialog():null);
+  }
+
+  renderVals(){ this.B=this.props.brandColor||'#0f172a'; this.G=this.props.positiveColor||'#059669'; return { view:this.renderApp() }; }
+}
+</script>
+</body>
+</html>
